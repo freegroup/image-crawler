@@ -1,19 +1,27 @@
 import os
 import queue
+from worker.download import DownloadThread
 from worker.search import SearchThread
 from data.configuration import Configuration
 from data.images import Images
 
 from tkinter import *
+from tkinter import ttk
 from tkinter import filedialog
+from PIL import ImageTk, Image
 
 queue_search_query = queue.Queue(maxsize=100)
 queue_search_result = queue.Queue(maxsize=100)
+queue_images = queue.Queue(maxsize=100)
 
 conf = Configuration("config.ini")
 images = Images(conf)
+
 search = SearchThread(conf, queue_search_query, queue_search_result)
 search.start()
+
+downloader = DownloadThread(conf, queue_search_result, queue_images)
+downloader.start()
 
 dirpath = os.getcwd()
 
@@ -50,9 +58,12 @@ class Example(Frame):
         buttonBad = Button(self, text="Search", command=self.search_image)
         buttonBad.grid(row=0, column=4, sticky="EW")
 
-        area = Text(self)
-        area.grid(row=1, column=0, columnspan=2, rowspan=6,
-                  padx=5, sticky="EWSN")
+        self.image = Image.open("blank.png")
+        img = ImageTk.PhotoImage(self.image)
+        self.imageLabel = ttk.Label(self, image=img)
+        self.imageLabel.image = img
+        self.imageLabel.grid(row=1, column=0, columnspan=2, rowspan=6, sticky="EWSN")
+        self.imageLabel.bind('<Configure>', self._resize_image)
 
         lbl = Label(self, text="Image Directory")
         lbl.grid(row=1, column=3, pady=(20, 0),  sticky="W")
@@ -69,6 +80,16 @@ class Example(Frame):
         obtn.grid(row=7, column=1, sticky="WE")
         root.bind("<Right>", self.good_image_callback)
 
+    def _resize_image(self, event):
+        new_width = event.width
+        new_height = event.height
+
+        img_copy= self.image.copy()
+        img_copy = img_copy.resize((new_width, new_height))
+        img_copy = ImageTk.PhotoImage(img_copy)
+        self.imageLabel.image=img_copy
+        self.imageLabel.config(image=img_copy)
+
     def select_image_dir(self):
         # Allow user to select a directory and store it in global var
         # called folder_path
@@ -80,13 +101,25 @@ class Example(Frame):
         conf.search_term = self.search_term.get()
         queue_search_query.put(conf.search_term)
 
-    @staticmethod
-    def bad_image_callback(event):
+    def bad_image_callback(self, event):
         print("bad image")
 
-    @staticmethod
-    def good_image_callback(event):
+    def good_image_callback(self, event):
         print("good image")
+        self.image= queue_images.get()
+
+        new_width = self.imageLabel.winfo_width()
+        new_height = self.imageLabel.winfo_height()
+
+        img_copy= self.image.copy()
+        img_copy = img_copy.resize((new_width, new_height))
+        img_copy = ImageTk.PhotoImage(img_copy)
+
+        self.imageLabel.image=img_copy
+        self.imageLabel.config(image=img_copy)
+
+
+
 
 
 
