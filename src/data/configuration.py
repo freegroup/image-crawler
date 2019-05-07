@@ -9,38 +9,38 @@ class Configuration:
         self.__config.read(conf_file)
 
     @property
-    def subscriptionKey(self):
+    def subscription_key(self):
         try:
             return self.__config['DEFAULT']['SUBSCRIPTION_KEY']
         except KeyError:
             return "no-key"
 
-    @subscriptionKey.setter
-    def subscriptionKey(self, val):
+    @subscription_key.setter
+    def subscription_key(self, val):
         self.__config['DEFAULT']['SUBSCRIPTION_KEY'] = val
         self.__dump()
 
     @property
-    def imageDir(self):
+    def image_dir(self):
         try:
             return self.__config['DEFAULT']['IMAGE_DIR']
         except KeyError:
             return "./data"
 
-    @imageDir.setter
-    def imageDir(self, val):
+    @image_dir.setter
+    def image_dir(self, val):
         self.__config['DEFAULT']['IMAGE_DIR'] = val
         self.__dump()
 
     @property
-    def searchTerm(self):
+    def search_term(self):
         try:
             return self.__config['DEFAULT']['SEARCH_TERM']
         except KeyError:
             return "cat garden"
 
-    @searchTerm.setter
-    def searchTerm(self, val):
+    @search_term.setter
+    def search_term(self, val):
         self.__config['DEFAULT']['SEARCH_TERM'] = val
         self.__dump()
 

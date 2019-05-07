@@ -1,4 +1,5 @@
 import os
+import queue
 from worker.search import SearchThread
 from data.configuration import Configuration
 from data.images import Images
@@ -6,12 +7,17 @@ from data.images import Images
 from tkinter import *
 from tkinter import filedialog
 
+queue_search_query = queue.Queue(maxsize=100)
+queue_search_result = queue.Queue(maxsize=100)
+
 conf = Configuration("config.ini")
 images = Images(conf)
+search = SearchThread(conf, queue_search_query, queue_search_result)
+search.start()
 
 dirpath = os.getcwd()
 
-mypath = conf.imageDir
+mypath = conf.image_dir
 good = set([os.path.splitext(os.path.basename(f))[0] for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))])
 
 
@@ -22,14 +28,12 @@ class Example(Frame):
     def __init__(self):
         super().__init__()
         self.image_dir = StringVar()
-        self.image_dir.set(conf.imageDir)
+        self.image_dir.set(conf.image_dir)
 
         self.search_term = StringVar()
-        self.search_term.set(conf.searchTerm)
+        self.search_term.set(conf.search_term)
 
         self.initUI()
-        self.search = SearchThread(10)
-        self.search.start()
 
     def initUI(self):
         self.master.title("Image Search for Machine Learning")
@@ -72,8 +76,9 @@ class Example(Frame):
         conf.imageDir = path
         self.image_dir.set(conf.imageDir)
 
-    def search_image(selfself):
-        print("search")
+    def search_image(self):
+        conf.search_term = self.search_term.get()
+        queue_search_query.put(conf.search_term)
 
     @staticmethod
     def bad_image_callback(event):
@@ -88,6 +93,9 @@ class Example(Frame):
 def main():
     root.geometry("550x300+30+30")
     app = Example()
+    root.lift()
+    root.attributes('-topmost',True)
+    root.after_idle(root.attributes,'-topmost',False)
     root.mainloop()
 
 

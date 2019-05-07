@@ -19,17 +19,6 @@ path = "/bing/v7.0/images/search"
 
 term = "cat garden"
 
-def BingImageSearch(search, count, offset):
-    "Performs a Bing image search and returns the results."
-
-    headers = {'Ocp-Apim-Subscription-Key': subscriptionKey}
-    conn = http.client.HTTPSConnection(host)
-    query = urllib.parse.quote(search)
-    conn.request("GET", path + "?q=" + query + "&count="+str(count) + "&offset="+str(offset), headers=headers)
-    response = conn.getresponse()
-    headers = [k + ": " + v for (k, v) in response.getheaders()
-               if k.startswith("BingAPIs-") or k.startswith("X-MSEdge-")]
-    return headers, response.read().decode("utf8")
 
 if len(subscriptionKey) == 32:
 
