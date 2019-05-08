@@ -1,9 +1,14 @@
-import os
+from sys import platform as sys_pf
+if sys_pf == 'darwin':
+    import matplotlib
+    matplotlib.use("TkAgg")
+
 import queue
-from worker.download import DownloadThread
-from worker.search import SearchThread
-from data.configuration import Configuration
-from data.images import Images
+from worker.download import DownloadWorker
+from worker.search import SearchWorker
+from worker.image import AcceptImageWorker, SkipImageWorker, ImageIndexer
+
+from configuration import Configuration
 
 from tkinter import *
 from tkinter import ttk
@@ -13,20 +18,24 @@ from PIL import ImageTk, Image
 queue_search_query = queue.Queue(maxsize=100)
 queue_search_result = queue.Queue(maxsize=100)
 queue_images = queue.Queue(maxsize=100)
+queue_accept = queue.Queue(maxsize=1000)
+queue_skip = queue.Queue(maxsize=1000)
 
 conf = Configuration("config.ini")
-images = Images(conf)
+image_indexer = ImageIndexer(conf)
+image_indexer.start()
 
-search = SearchThread(conf, queue_search_query, queue_search_result)
-search.start()
+search_worker = SearchWorker(conf, queue_search_query, queue_search_result)
+search_worker.start()
 
-downloader = DownloadThread(conf, queue_search_result, queue_images)
-downloader.start()
+download_worker = DownloadWorker(conf, queue_search_result, queue_images)
+download_worker.start()
 
-dirpath = os.getcwd()
+accept_worker = AcceptImageWorker(conf, queue_accept)
+accept_worker.start()
 
-mypath = conf.image_dir
-good = set([os.path.splitext(os.path.basename(f))[0] for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))])
+skip_worker = SkipImageWorker(conf, queue_skip)
+skip_worker.start()
 
 
 root = Tk()
@@ -55,7 +64,7 @@ class Example(Frame):
 
         lbl = Entry(self, textvariable=self.search_term)
         lbl.grid(pady=4, padx=5, columnspan=4, sticky="EW")
-        buttonBad = Button(self, text="Search", command=self.search_image)
+        buttonBad = ttk.Button(self, text="Search", command=self.search_image)
         buttonBad.grid(row=0, column=4, sticky="EW")
 
         self.image = Image.open("blank.png")
@@ -65,18 +74,18 @@ class Example(Frame):
         self.imageLabel.grid(row=1, column=0, columnspan=2, rowspan=6, sticky="EWSN")
         self.imageLabel.bind('<Configure>', self._resize_image)
 
-        lbl = Label(self, text="Image Directory")
+        lbl = ttk.Label(self, text="Image Directory")
         lbl.grid(row=1, column=3, pady=(20, 0),  sticky="W")
-        entryBadPath = Entry(self, textvariable=self.image_dir)
+        entryBadPath = ttk.Entry(self, textvariable=self.image_dir)
         entryBadPath.grid(row=2, column=3)
-        buttonBad = Button(self, text="Browse..", command=self.select_image_dir)
+        buttonBad = ttk.Button(self, text="Browse..", command=self.select_image_dir)
         buttonBad.grid(row=2, column=4)
 
-        hbtn = Button(self, text="Skip Image")
+        hbtn = ttk.Button(self, text="Skip Image")
         hbtn.grid(row=7, column=0, sticky="WE")
         root.bind("<Left>", self.bad_image_callback)
 
-        obtn = Button(self, text="Keep Image")
+        obtn = ttk.Button(self, text="Keep Image")
         obtn.grid(row=7, column=1, sticky="WE")
         root.bind("<Right>", self.good_image_callback)
 
@@ -94,8 +103,9 @@ class Example(Frame):
         # Allow user to select a directory and store it in global var
         # called folder_path
         path = filedialog.askdirectory().replace(dirpath, ".")
-        conf.imageDir = path
-        self.image_dir.set(conf.imageDir)
+        print(path)
+        conf.image_dir = path
+        self.image_dir.set(conf.image_dir)
 
     def search_image(self):
         conf.search_term = self.search_term.get()
@@ -103,9 +113,15 @@ class Example(Frame):
 
     def bad_image_callback(self, event):
         print("bad image")
+        queue_skip.put(self.image)
+        self.display_next_image()
 
     def good_image_callback(self, event):
         print("good image")
+        queue_accept.put(self.image)
+        self.display_next_image()
+
+    def display_next_image(self):
         self.image= queue_images.get()
 
         new_width = self.imageLabel.winfo_width()
@@ -117,10 +133,6 @@ class Example(Frame):
 
         self.imageLabel.image=img_copy
         self.imageLabel.config(image=img_copy)
-
-
-
-
 
 
 def main():

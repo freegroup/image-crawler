@@ -7,7 +7,7 @@ from threading import Thread
 host = "api.cognitive.microsoft.com"
 path = "/bing/v7.0/images/search"
 
-class SearchThread(Thread):
+class SearchWorker(Thread):
     def __init__(self, conf, queue_query, queue_result):
         Thread.__init__(self)
         self.__conf = conf

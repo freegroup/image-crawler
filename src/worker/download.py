@@ -1,16 +1,15 @@
-from sys import platform as sys_pf
-if sys_pf == 'darwin':
-    import matplotlib
-    matplotlib.use("TkAgg")
+#from sys import platform as sys_pf
+#if sys_pf == 'darwin':
+#    import matplotlib
+#    matplotlib.use("TkAgg")
 
 import io
 import requests
 from PIL import Image
-import matplotlib.pyplot as plt
 from threading import Thread
 
 
-class DownloadThread(Thread):
+class DownloadWorker(Thread):
     def __init__(self, conf, queue_query, queue_result):
         Thread.__init__(self)
         self.__conf = conf
