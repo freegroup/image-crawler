@@ -1,58 +1,63 @@
-from sys import platform as sys_pf
-if sys_pf == 'darwin':
-    import matplotlib
-    matplotlib.use("TkAgg")
+#from sys import platform as sys_pf
+#if sys_pf == 'darwin':
+#    import matplotlib
+#    matplotlib.use("TkAgg")
 
 import queue
-from worker.download import DownloadWorker
-from worker.search import SearchWorker
-from worker.image import AcceptImageWorker, SkipImageWorker, ImageIndexer
-
-from configuration import Configuration
-
-from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
+from pydoc import locate
+from tkinter import Tk, Frame, StringVar, BOTH, ttk
 from PIL import ImageTk, Image
+from img_crawler.configuration import Configuration
 
 queue_search_query = queue.Queue(maxsize=100)
-queue_search_result = queue.Queue(maxsize=100)
-queue_images = queue.Queue(maxsize=100)
-queue_accept = queue.Queue(maxsize=1000)
-queue_skip = queue.Queue(maxsize=1000)
+queue_img_urls = queue.Queue(maxsize=100)
+queue_img_fetched = queue.Queue(maxsize=100)
+queue_img_appraised = queue.Queue(maxsize=100)
+queue_img_accepted = queue.Queue(maxsize=1000)
+queue_img_skipped = queue.Queue(maxsize=1000)
 
-conf = Configuration("config.ini")
-image_indexer = ImageIndexer(conf)
-image_indexer.start()
+conf = Configuration(inifile="config.ini")
 
-search_worker = SearchWorker(conf, queue_search_query, queue_search_result)
+SearchWorker = locate(conf.impl_search())
+search_worker = SearchWorker(queue_search_query, queue_img_urls)
 search_worker.start()
 
-download_worker = DownloadWorker(conf, queue_search_result, queue_images)
-download_worker.start()
+ImageLoaderWorker = locate(conf.impl_loader())
+loader_worker = ImageLoaderWorker(queue_img_urls, queue_img_fetched)
+loader_worker.start()
 
-accept_worker = AcceptImageWorker(conf, queue_accept)
-accept_worker.start()
+ImageAppraiser = locate(conf.impl_appraiser())
+accepted_worker = ImageAppraiser(queue_img_fetched, queue_img_appraised)
+accepted_worker.start()
 
-skip_worker = SkipImageWorker(conf, queue_skip)
-skip_worker.start()
+AcceptedImageWorker = locate(conf.impl_accepted())
+accepted_worker = AcceptedImageWorker(queue_img_accepted)
+accepted_worker.start()
 
+SkippedImageWorker = locate(conf.impl_skipped())
+skipped_worker = SkippedImageWorker(queue_img_skipped)
+skipped_worker.start()
 
-root = Tk()
 
 class Example(Frame):
 
-    def __init__(self):
+    def __init__(self, root):
         super().__init__()
-        self.image_dir = StringVar()
-        self.image_dir.set(conf.image_dir)
-
+        self.__root = root
         self.search_term = StringVar()
-        self.search_term.set(conf.search_term)
+        self.search_term.set(conf.ui(key="search_term"))
 
         self.initUI()
 
+        self.__root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.__root.lift()
+        self.__root.attributes('-topmost', True)
+        self.__root.after_idle(root.attributes, '-topmost', False)
+        self.__root.mainloop()
+
     def initUI(self):
+        self.__root.geometry("550x300+30+30")
+
         self.master.title("Image Search for Machine Learning")
         self.pack(fill=BOTH, expand=True)
 
@@ -62,87 +67,66 @@ class Example(Frame):
         self.rowconfigure(6, weight=1)
         self.rowconfigure(5, pad=7)
 
-        lbl = Entry(self, textvariable=self.search_term)
+        lbl = ttk.Entry(self, textvariable=self.search_term)
         lbl.grid(pady=4, padx=5, columnspan=4, sticky="EW")
-        buttonBad = ttk.Button(self, text="Search", command=self.search_image)
-        buttonBad.grid(row=0, column=4, sticky="EW")
+        button_search = ttk.Button(self, text=conf.ui("search_text"), command=self.search_image)
+        button_search.grid(row=0, column=4, sticky="EW")
 
-        self.image = Image.open("blank.png")
-        img = ImageTk.PhotoImage(self.image)
-        self.imageLabel = ttk.Label(self, image=img)
-        self.imageLabel.image = img
-        self.imageLabel.grid(row=1, column=0, columnspan=2, rowspan=6, sticky="EWSN")
-        self.imageLabel.bind('<Configure>', self._resize_image)
+        self.image_data = {"image": Image.open("blank.png") }
+        img = ImageTk.PhotoImage(self.image_data["image"])
+        self.image_preview = ttk.Label(self, image=img)
+        self.image_preview.image = img
+        self.image_preview.grid(row=1, column=0, columnspan=2, rowspan=6, sticky="EWSN")
+        self.image_preview.bind('<Configure>', self._resize_image)
 
-        lbl = ttk.Label(self, text="Image Directory")
-        lbl.grid(row=1, column=3, pady=(20, 0),  sticky="W")
-        entryBadPath = ttk.Entry(self, textvariable=self.image_dir)
-        entryBadPath.grid(row=2, column=3)
-        buttonBad = ttk.Button(self, text="Browse..", command=self.select_image_dir)
-        buttonBad.grid(row=2, column=4)
+        skip_button = ttk.Button(self, text=conf.ui("skip_text"), command= self.skip_image_callback)
+        skip_button.grid(row=7, column=0, sticky="WE")
+        self.__root.bind(conf.ui("skip_hot_key"), self.skip_image_callback)
 
-        hbtn = ttk.Button(self, text="Skip Image")
-        hbtn.grid(row=7, column=0, sticky="WE")
-        root.bind("<Left>", self.bad_image_callback)
+        keep_button = ttk.Button(self, text=conf.ui("keep_text"), command= self.keep_image_callback)
+        keep_button.grid(row=7, column=1, sticky="WE")
+        self.__root.bind(conf.ui("keep_hot_key"), self.keep_image_callback)
 
-        obtn = ttk.Button(self, text="Keep Image")
-        obtn.grid(row=7, column=1, sticky="WE")
-        root.bind("<Right>", self.good_image_callback)
-
-    def _resize_image(self, event):
-        new_width = event.width
-        new_height = event.height
-
-        img_copy= self.image.copy()
-        img_copy = img_copy.resize((new_width, new_height))
-        img_copy = ImageTk.PhotoImage(img_copy)
-        self.imageLabel.image=img_copy
-        self.imageLabel.config(image=img_copy)
-
-    def select_image_dir(self):
-        # Allow user to select a directory and store it in global var
-        # called folder_path
-        path = filedialog.askdirectory().replace(dirpath, ".")
-        print(path)
-        conf.image_dir = path
-        self.image_dir.set(conf.image_dir)
 
     def search_image(self):
         conf.search_term = self.search_term.get()
         queue_search_query.put(conf.search_term)
 
-    def bad_image_callback(self, event):
-        print("bad image")
-        queue_skip.put(self.image)
+    def skip_image_callback(self, event=None):
+        if 'md5' in self.image_data.keys():
+            queue_img_skipped.put(self.image_data)
         self.display_next_image()
 
-    def good_image_callback(self, event):
-        print("good image")
-        queue_accept.put(self.image)
+    def keep_image_callback(self, event=None):
+        if 'md5' in self.image_data.keys():
+            queue_img_accepted.put(self.image_data)
         self.display_next_image()
 
     def display_next_image(self):
-        self.image= queue_images.get()
+        self.image_data = queue_img_appraised.get()
 
-        new_width = self.imageLabel.winfo_width()
-        new_height = self.imageLabel.winfo_height()
+        new_width = self.image_preview.winfo_width()
+        new_height = self.image_preview.winfo_height()
 
-        img_copy= self.image.copy()
+        img_copy = self.image_data["image"].copy()
         img_copy = img_copy.resize((new_width, new_height))
         img_copy = ImageTk.PhotoImage(img_copy)
 
-        self.imageLabel.image=img_copy
-        self.imageLabel.config(image=img_copy)
+        self.image_preview.image = img_copy
+        self.image_preview.config(image=img_copy)
+
+    def _resize_image(self, event):
+        new_width = event.width
+        new_height = event.height
+
+        img_copy = self.image_data["image"].copy()
+        img_copy = img_copy.resize((new_width, new_height))
+        img_copy = ImageTk.PhotoImage(img_copy)
+        self.image_preview.image = img_copy
+        self.image_preview.config(image=img_copy)
+
+    def on_closing(self):
+        self.__root.destroy()
 
 
-def main():
-    root.geometry("550x300+30+30")
-    app = Example()
-    root.lift()
-    root.attributes('-topmost',True)
-    root.after_idle(root.attributes,'-topmost',False)
-    root.mainloop()
-
-
-if __name__ == '__main__':
-    main()
+app = Example(Tk())
