@@ -4,6 +4,7 @@
 #    matplotlib.use("TkAgg")
 
 import queue
+
 from pydoc import locate
 from tkinter import Tk, Frame, StringVar, BOTH, ttk
 from PIL import ImageTk, Image
@@ -91,6 +92,16 @@ class Example(Frame):
     def search_image(self):
         conf.search_term = self.search_term.get()
         queue_search_query.put(conf.search_term)
+        try:
+            while True:
+                queue_img_urls.get_nowait()
+        except queue.Empty:
+            pass
+        try:
+            while True:
+                queue_img_fetched.get_nowait()
+        except queue.Empty:
+            pass
 
     def skip_image_callback(self, event=None):
         if 'md5' in self.image_data.keys():
