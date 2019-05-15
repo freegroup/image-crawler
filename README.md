@@ -12,3 +12,6 @@ quickly gather training images and thereby cut down on the time it takes to buil
 
 ## Simple Python UI
 
+
+
+brew install protobuf

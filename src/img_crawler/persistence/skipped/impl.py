@@ -27,7 +27,7 @@ class StoreToFolderWorker(Thread):
                 inventory.add_already_skipped(data["url"])
 
     def run(self):
-        "Calculate the MD5 hash of an image and store them with the has as filename"
+        """Calculate the MD5 hash of an image and store them with the has as filename"""
 
         while True:
             try:
