@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: git-sync-demo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: git-sync-demo
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.11-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: git-sync-volume
+              mountPath: /usr/share/nginx
+        - name: git-sync
+          image: gcr.io/google_containers/git-sync:v2.0.3
+          volumeMounts:
+            - name: git-sync-volume
+              mountPath: /usr/share/nginx
+          env:
+            - name: GIT_SYNC_REPO
+              # change the repository to serve
+              #
+              value: https://github.com/freegroup/image-crawler.git
+              # change the branch to server. normally it is "master". I use "gh-pages" in this demo
+              #
+            - name: GIT_SYNC_BRANCH
+              value: master
+            - name: GIT_SYNC_ROOT
+              value: /usr/share/nginx
+            - name: GIT_SYNC_DEST
+              value: html
+      volumes:
+        - name: git-sync-volume
+          emptyDir: {}
