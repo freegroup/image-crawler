@@ -1,0 +1,30 @@
+[UI]
+search_term = cat garden
+search_text = Search
+skip_text=Skip Image
+skip_hot_key=<Left>
+keep_text=Keep Image
+keep_hot_key=<Right>
+
+[SEARCH]
+implementation = search.impl.BingSearchWorker
+subscription_key = <YOUR_BING_SEARCH_SUBSRIBTION_KEY>
+host = api.cognitive.microsoft.com
+uri = /bing/v7.0/images/search
+
+[LOADER]
+implementation = loader.impl.URLDownloadWorker
+
+[ACCEPTED]
+implementation = persistence.accepted.impl.StoreToFolderWorker
+dir = ./data/010-image-crawler/accepted
+
+[SKIPPED]
+implementation = persistence.skipped.impl.StoreToFolderWorker
+dir = ./data/010-image-crawler/skipped
+
+[APPRAISER]
+implementation = appraiser.impl.AvoidDuplicates
+
+[CROPPER]
+dir = ./data/020-image-cropper/
