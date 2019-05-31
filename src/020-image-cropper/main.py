@@ -5,10 +5,10 @@ from tkinter import filedialog
 
 import sys
 import os
-import signal
 import math
 import subprocess
 import time
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def _(s): return s  # TODO: i18n
 
@@ -43,7 +43,7 @@ class DragManager(object):
         w.bind("<Double-Button-1>", self.start)
         w.bind("<Button1-Motion>", self.motion)
         w.bind("<ButtonRelease-1>", self.end)
-        dummy_image = Image.open("blank.png")
+        dummy_image = Image.open(os.path.join(dir_path,"blank.png"))
         self.dummy_tkimage = ImageTk.PhotoImage(dummy_image)
         self.state = DRAG_NONE
         self.round = 1
@@ -235,9 +235,9 @@ def image_names():
     else:
         while 1:
             names = filedialog.askopenfilenames(master=app,
-                                                  defaultextension=".jpg", multiple=1, parent=app,
+                                                  defaultextension=".png", multiple=1, parent=app,
                                                   filetypes=(
-                                                      (_("JPEG Image Files"), ".jpg .JPG .jpeg .JPEG"),
+                                                      (_("Image Files"), ".jpg .JPG .jpeg .JPEG .PNG .png"),
                                                       (_("All files"), "*"),
                                                   ),
                                                   title=_("Select images to crop"))
@@ -272,7 +272,7 @@ for image_name in image_names():
     target = base + "-crop" + ext
     target = open(target, "wb")
     pids.add(subprocess.Popen(
-        ['jpegtran','-optimize','-progressive','-crop',cropspec,image_name],
+        ['-optimize','-progressive','-crop',cropspec,image_name],
         stdout=target))
     target.close()
 

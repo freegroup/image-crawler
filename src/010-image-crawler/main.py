@@ -6,7 +6,7 @@
 import queue
 
 from pydoc import locate
-from tkinter import Tk, Frame, StringVar, BOTH, ttk
+from tkinter import Tk, Frame, StringVar, BOTH, ttk, DISABLED
 from PIL import ImageTk, Image, ImageOps
 from configuration import Configuration
 import os
@@ -71,6 +71,15 @@ class App(Frame):
 
     def initUI(self):
         self.__root.geometry("550x300+30+30")
+        style = ttk.Style()
+        style.map("C.TButton",
+                  foreground=[
+                      ('disabled', 'grey')
+                  ],
+                  background=[
+
+                  ]
+                  )
 
         self.master.title("Image Search for Machine Learning")
         self.pack(fill=BOTH, expand=True)
@@ -83,7 +92,7 @@ class App(Frame):
 
         lbl = ttk.Entry(self, textvariable=self.search_term)
         lbl.grid(pady=4, padx=5, columnspan=4, sticky="EW")
-        button_search = ttk.Button(self, text=conf.ui("search_text"), command=self.search_image)
+        button_search = ttk.Button(self, text=conf.ui("search_text"), command=self.search_image, style="C.TButton")
         button_search.grid(row=0, column=4, sticky="EW")
 
         self.image_blank = {"image": Image.open(os.path.join(dir_path,"blank.png")) }
@@ -96,14 +105,16 @@ class App(Frame):
         self.image_preview.grid(row=1, column=0, columnspan=2, rowspan=6, sticky='EW')
         self.image_preview.bind('<Configure>', self._resize_image)
 
-        skip_button = ttk.Button(self, text=conf.ui("skip_text"), command= self.skip_image_callback)
-        skip_button.grid(row=7, column=0, sticky="WE")
+        self.skip_button = ttk.Button(self, text=conf.ui("skip_text"), command= self.skip_image_callback, style="C.TButton")
+        self.skip_button.grid(row=7, column=0, sticky="WE")
+        self.skip_button.state(["disabled"])   # Disable the button.
         self.__root.bind(conf.ui("skip_hot_key"), self.skip_image_callback)
 
-        keep_button = ttk.Button(self, text=conf.ui("keep_text"), command= self.keep_image_callback)
-        keep_button.grid(row=7, column=1, sticky="WE")
+        self.keep_button = ttk.Button(self, text=conf.ui("keep_text"), command= self.keep_image_callback, style="C.TButton")
+        self.keep_button.grid(row=7, column=1, sticky="WE")
+        self.keep_button.config(state=DISABLED)  # Enable the button.
         self.__root.bind(conf.ui("keep_hot_key"), self.keep_image_callback)
-
+        self.after(1000, self.check_for_image)
 
 
     # Called if the user pressed the "search" button. Now the current active search term is posted
@@ -143,13 +154,24 @@ class App(Frame):
             queue_img_accepted.put(self.image_current)
         self.display_next_image()
 
-    # Load the next image from the queue and display them in the UI
+    def check_for_image(self):
+        print("check")
+        if queue_img_appraised.qsize()>0 and self.image_current == self.image_loading :
+            self.display_next_image()
+        self.after(1000, self.check_for_image)
+
+
+# Load the next image from the queue and display them in the UI
     #
     def display_next_image(self):
-        if queue_img_appraised.qsize()>0:
+        if queue_img_appraised.qsize()>0  :
             self.image_current = queue_img_appraised.get()
+            self.skip_button.state(["!disabled"])   # Disable the button.
+            self.keep_button.state(["!disabled"])  # Enable the button.
         else:
             self.image_current = self.image_loading
+            self.skip_button.state(["disabled"])   # Disable the button.
+            self.keep_button.state(["disabled"])  # Enable the button.
 
 
         new_width = self.image_preview.winfo_width()
@@ -161,10 +183,12 @@ class App(Frame):
 
         self.image_preview.image = img_copy
         self.image_preview.config(image=img_copy)
+        self._resize_image(None)
 
     def _resize_image(self, event):
-        new_width = event.width
-        new_height = event.height
+        new_width = self.image_preview.winfo_width()
+        new_height = self.image_preview.winfo_height()
+
 
         img_copy = self.image_current["image"].copy()
         img_copy = ImageOps.fit(img_copy, (min(new_width, new_height),min(new_width, new_height)), Image.ANTIALIAS)

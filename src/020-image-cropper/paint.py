@@ -1,49 +1,74 @@
+import PIL.Image
+import Image
+import ImageTk
+from Tkinter import *
 
-from PIL import ImageTk, Image, ImageDraw
-import PIL
-from tkinter import *
+
+class ExampleApp(Frame):
+    def __init__(self,master):
+        Frame.__init__(self,master=None)
+        self.x = self.y = 0
+        self.canvas = Canvas(self,  cursor="cross")
+
+        self.sbarv=Scrollbar(self,orient=VERTICAL)
+        self.sbarh=Scrollbar(self,orient=HORIZONTAL)
+        self.sbarv.config(command=self.canvas.yview)
+        self.sbarh.config(command=self.canvas.xview)
+
+        self.canvas.config(yscrollcommand=self.sbarv.set)
+        self.canvas.config(xscrollcommand=self.sbarh.set)
+
+        self.canvas.grid(row=0,column=0,sticky=N+S+E+W)
+        self.sbarv.grid(row=0,column=1,stick=N+S)
+        self.sbarh.grid(row=1,column=0,sticky=E+W)
+
+        self.canvas.bind("<ButtonPress-1>", self.on_button_press)
+        self.canvas.bind("<B1-Motion>", self.on_move_press)
+        self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
+
+        self.rect = None
+
+        self.start_x = None
+        self.start_y = None
+
+        self.im = PIL.Image.open("logo.png")
+        self.wazil,self.lard=self.im.size
+        self.canvas.config(scrollregion=(0,0,self.wazil,self.lard))
+        self.tk_im = ImageTk.PhotoImage(self.im)
+        self.canvas.create_image(0,0,anchor="nw",image=self.tk_im)
 
 
-width = 200
-height = 200
-center = height//2
-white = (255, 255, 255)
-green = (0,128,0)
+    def on_button_press(self, event):
+        # save mouse drag start position
+        self.start_x = self.canvas.canvasx(event.x)
+        self.start_y = self.canvas.canvasy(event.y)
 
-def save():
-    filename = "image.png"
-    image1.save(filename)
+        # create rectangle if not yet exist
+        if not self.rect:
+            self.rect = self.canvas.create_rectangle(self.x, self.y, 1, 1, outline='red')
 
-def paint(event):
-    # python_green = "#476042"
-    x1, y1 = (event.x - 1), (event.y - 1)
-    x2, y2 = (event.x + 1), (event.y + 1)
-    cv.create_oval(x1, y1, x2, y2, fill="black",width=5)
-    draw.line([x1, y1, x2, y2],fill="black",width=5)
+    def on_move_press(self, event):
+        curX = self.canvas.canvasx(event.x)
+        curY = self.canvas.canvasy(event.y)
 
-root = Tk()
+        w, h = self.canvas.winfo_width(), self.canvas.winfo_height()
+        if event.x > 0.9*w:
+            self.canvas.xview_scroll(1, 'units')
+        elif event.x < 0.1*w:
+            self.canvas.xview_scroll(-1, 'units')
+        if event.y > 0.9*h:
+            self.canvas.yview_scroll(1, 'units')
+        elif event.y < 0.1*h:
+            self.canvas.yview_scroll(-1, 'units')
 
-# Tkinter create a canvas to draw on
-cv = Canvas(root, width=width, height=height, bg='white')
-cv.pack()
+        # expand rectangle as you drag the mouse
+        self.canvas.coords(self.rect, self.start_x, self.start_y, curX, curY)
 
-# PIL create an empty image and draw object to draw on
-# memory only, not visible
-image1 = PIL.Image.new("RGB", (width, height), white)
-draw = ImageDraw.Draw(image1)
+    def on_button_release(self, event):
+        pass
 
-# do the Tkinter canvas drawings (visible)
-# cv.create_line([0, center, width, center], fill='green')
-
-cv.pack(expand=YES, fill=BOTH)
-cv.bind("<B1-Motion>", paint)
-
-# do the PIL image/draw (in memory) drawings
-# draw.line([0, center, width, center], green)
-
-# PIL image can be saved as .png .jpg .gif or .bmp file (among others)
-# filename = "my_drawing.png"
-# image1.save(filename)
-button=Button(text="save",command=save)
-button.pack()
-root.mainloop()
+if __name__ == "__main__":
+    root=Tk()
+    app = ExampleApp(root)
+    app.pack()
+    root.mainloop()
