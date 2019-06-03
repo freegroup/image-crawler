@@ -7,6 +7,9 @@ class MD5Inventory:
     def __init__(self):
         pass
 
+    def count_already_accepted(self):
+        return len(MD5Inventory.__accepted)
+
     def add_already_accepted(self, md5):
         if isinstance(md5, list):
             MD5Inventory.__accepted.extend(md5)

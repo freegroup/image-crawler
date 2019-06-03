@@ -2,20 +2,33 @@
 #if sys_pf == 'darwin':
 #    import matplotlib
 #    matplotlib.use("TkAgg")
-
+from cefpython3 import cefpython as cef
+import ctypes
 import queue
-
+import tkinter as tk
 from pydoc import locate
-from tkinter import Tk, Frame, StringVar, BOTH, ttk, DISABLED
 from PIL import ImageTk, Image, ImageOps
-from configuration import Configuration
 import os
+import platform
+import sys
+import base64
+from io import BytesIO
+
+from configuration import Configuration
+from persistence.hashes import MD5Inventory
+
+# Platforms
+WINDOWS = (platform.system() == "Windows")
+LINUX = (platform.system() == "Linux")
+MAC = (platform.system() == "Darwin")
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Load the app configuration
 #
-conf = Configuration(inifile=os.path.join(dir_path,"..", "config.ini"))
+conf = Configuration(inifile=os.path.join(dir_path, "..", "config.ini"))
+inventory = MD5Inventory()
 
 # Some sync. queue to handle the differnet threads for searching, loading, grouping,...
 #
@@ -53,76 +66,58 @@ skipped_worker.start()
 
 # Very basic UI for the image search and selection.
 #
-class App(Frame):
+class App(tk.Frame):
 
-    def __init__(self, root):
-        super().__init__()
-        self.__root = root
-        self.search_term = StringVar()
-        self.search_term.set(conf.ui(key="search_term"))
+    def __init__(self, master):
+        # Root
+        master.geometry("900x640")
+        tk.Grid.rowconfigure(master, 0, weight=1)
+        tk.Grid.columnconfigure(master, 0, weight=1)
 
-        self.initUI()
+        tk.Frame.__init__(self, master)
 
-        self.__root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.__root.lift()
-        self.__root.attributes('-topmost', True)
-        self.__root.after_idle(root.attributes, '-topmost', False)
-        self.__root.mainloop()
+        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.master.bind("<Configure>", self.on_root_configure)
 
-    def initUI(self):
-        self.__root.geometry("550x300+30+30")
-        style = ttk.Style()
-        style.map("C.TButton",
-                  foreground=[
-                      ('disabled', 'grey')
-                  ],
-                  background=[
+        self.check_versions()
 
-                  ]
-                  )
+        self.image_loading = { "image": Image.open(os.path.join(dir_path, "loading.png"))}
 
-        self.master.title("Image Search for Machine Learning")
-        self.pack(fill=BOTH, expand=True)
 
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.columnconfigure(3, pad=7)
-        self.rowconfigure(6, weight=1)
-        self.rowconfigure(5, pad=7)
+        # BrowserFrame
+        self.browser_frame = BrowserFrame(self)
+        self.browser_frame.grid(row=0, column=0, sticky=(tk.N + tk.S + tk.E + tk.W))
+        tk.Grid.rowconfigure(self, 1, weight=1)
+        tk.Grid.columnconfigure(self, 0, weight=1)
 
-        lbl = ttk.Entry(self, textvariable=self.search_term)
-        lbl.grid(pady=4, padx=5, columnspan=4, sticky="EW")
-        button_search = ttk.Button(self, text=conf.ui("search_text"), command=self.search_image, style="C.TButton")
-        button_search.grid(row=0, column=4, sticky="EW")
+        # Pack MainFrame
+        self.pack(fill=tk.BOTH, expand=tk.YES)
 
-        self.image_blank = {"image": Image.open(os.path.join(dir_path,"blank.png")) }
-        self.image_loading= {"image": Image.open(os.path.join(dir_path,"loading.png")) }
-        self.image_current = self.image_blank
+        #rect = [0, 0, self.winfo_width(), self.winfo_height()]
+        #window_info = cef.WindowInfo()
+        #window_info.SetAsChild(self.get_window_handle(), rect)
 
-        img = ImageTk.PhotoImage(self.image_current["image"])
-        self.image_preview = ttk.Label(self, image=img, anchor='center')
-        self.image_preview.image = img
-        self.image_preview.grid(row=1, column=0, columnspan=2, rowspan=6, sticky='EW')
-        self.image_preview.bind('<Configure>', self._resize_image)
+        #cur_dir = os.path.dirname(os.path.abspath(__file__))
+        #self.browser = cef.CreateBrowserSync(
+        #    window_info,
+        #    url='file://' + os.path.join(cur_dir, "ui", "index.html")
+        #)
 
-        self.skip_button = ttk.Button(self, text=conf.ui("skip_text"), command= self.skip_image_callback, style="C.TButton")
-        self.skip_button.grid(row=7, column=0, sticky="WE")
-        self.skip_button.state(["disabled"])   # Disable the button.
-        self.__root.bind(conf.ui("skip_hot_key"), self.skip_image_callback)
-
-        self.keep_button = ttk.Button(self, text=conf.ui("keep_text"), command= self.keep_image_callback, style="C.TButton")
-        self.keep_button.grid(row=7, column=1, sticky="WE")
-        self.keep_button.config(state=DISABLED)  # Enable the button.
-        self.__root.bind(conf.ui("keep_hot_key"), self.keep_image_callback)
-        self.after(1000, self.check_for_image)
+        #self.browser.SetClientHandler(self.load_handler())
+        #bindings = cef.JavascriptBindings()
+        #bindings.SetFunction("py_search_image_callback", self.search_image_callback)
+        #bindings.SetFunction("py_skip_image_callback", self.skip_image_callback)
+        #bindings.SetFunction("py_keep_image_callback", self.keep_image_callback)
+        #bindings.SetFunction("py_check_image_callback", self.check_for_image_callback)
+        #self.browser.SetJavascriptBindings(bindings)
 
 
     # Called if the user pressed the "search" button. Now the current active search term is posted
     # to the "queue_search_query" queue. The "search" thread picks up the new search term and starts crawling
     # images related to the new search term
     #
-    def search_image(self):
-        conf.search_term = self.search_term.get()
+    def search_image_callback(self, search_term):
+        conf.search_term = search_term
         queue_search_query.put(conf.search_term)
         try:
             while True:
@@ -154,51 +149,185 @@ class App(Frame):
             queue_img_accepted.put(self.image_current)
         self.display_next_image()
 
-    def check_for_image(self):
-        print("check")
+    def check_for_image_callback(self):
         if queue_img_appraised.qsize()>0 and self.image_current == self.image_loading :
             self.display_next_image()
-        self.after(1000, self.check_for_image)
+        self.browser.ExecuteFunction("js_set_counter", "counter_candidates", queue_img_urls.qsize())
+        self.browser.ExecuteFunction("js_set_counter", "counter_review", queue_img_appraised.qsize())
+        self.browser.ExecuteFunction("js_set_counter", "counter_pool", inventory.count_already_accepted())
 
-
-# Load the next image from the queue and display them in the UI
+    # Load the next image from the queue and display them in the UI
     #
     def display_next_image(self):
         if queue_img_appraised.qsize()>0  :
             self.image_current = queue_img_appraised.get()
-            self.skip_button.state(["!disabled"])   # Disable the button.
-            self.keep_button.state(["!disabled"])  # Enable the button.
+            #self.skip_button.state(["!disabled"])   # Disable the button.
+            #self.keep_button.state(["!disabled"])  # Enable the button.
         else:
             self.image_current = self.image_loading
-            self.skip_button.state(["disabled"])   # Disable the button.
-            self.keep_button.state(["disabled"])  # Enable the button.
+            #self.skip_button.state(["disabled"])   # Disable the button.
+            #self.keep_button.state(["disabled"])  # Enable the button.
 
 
-        new_width = self.image_preview.winfo_width()
-        new_height = self.image_preview.winfo_height()
-
-        img_copy = self.image_current["image"].copy()
-        img_copy = img_copy.resize((new_width, new_height))
-        img_copy = ImageTk.PhotoImage(img_copy)
-
-        self.image_preview.image = img_copy
-        self.image_preview.config(image=img_copy)
-        self._resize_image(None)
-
-    def _resize_image(self, event):
-        new_width = self.image_preview.winfo_width()
-        new_height = self.image_preview.winfo_height()
+        img =  self.image_current["image"]
+        ext =img.format
+        buffered = BytesIO()
+        img.save(buffered, ext)
+        img_str = base64.b64encode(buffered.getvalue())
+        image_src = "data:{0};base64,{1}".format(self.get_descriptor_by_type(ext), img_str.decode("utf-8"))
+        self.browser.ExecuteFunction("js_set_image", image_src)
 
 
-        img_copy = self.image_current["image"].copy()
-        img_copy = ImageOps.fit(img_copy, (min(new_width, new_height),min(new_width, new_height)), Image.ANTIALIAS)
-
-        img_copy = ImageTk.PhotoImage(img_copy)
-        self.image_preview.image = img_copy
-        self.image_preview.config(image=img_copy)
+    class load_handler(object):
+        def OnLoadEnd(self, browser, **_):
+            browser.ExecuteFunction("js_init_image_check_timer")
 
     def on_closing(self):
         self.__root.destroy()
 
+    def get_descriptor_by_type(self, ext):
+        options = {
+            "JPEG": "image/jpeg",
+            "PNG": "image/png",
+            "GIF": "image/gif"
+        }
+        k = options.get(ext)
+        if k is None:
+            raise Exception("No support for ["+ext+"] Only Jpeg, Png and Gif images are supported.")
+        return k
 
-app = App(Tk())
+    def check_versions(self):
+        ver = cef.GetVersion()
+        print("CEF Python {ver}".format(ver=ver["version"]))
+        print("Chromium {ver}".format(ver=ver["chrome_version"]))
+        print("CEF {ver}".format(ver=ver["cef_version"]))
+        print("Python {ver} {arch}".format(
+            ver=platform.python_version(),
+            arch=platform.architecture()[0]))
+        assert cef.__version__ >= "57.0", "CEF Python v57.0+ required to run this"
+
+    def on_root_configure(self, _):
+        if self.browser_frame:
+            self.browser_frame.on_root_configure()
+
+    def on_configure(self, event):
+         if self.browser_frame:
+            width = event.width
+            height = event.height
+            self.browser_frame.on_mainframe_configure(width, height)
+
+    def on_focus_in(self, _):
+        pass
+
+    def on_focus_out(self, _):
+        pass
+
+    def on_close(self):
+        if self.browser_frame:
+            self.browser_frame.on_root_close()
+        self.master.destroy()
+
+    def get_browser(self):
+        if self.browser_frame:
+            return self.browser_frame.browser
+        return None
+
+    def get_browser_frame(self):
+        if self.browser_frame:
+            return self.browser_frame
+        return None
+
+    def setup_icon(self):
+        pass
+
+
+
+class BrowserFrame(tk.Frame):
+
+    def __init__(self, master):
+        self.closing = False
+        self.browser = None
+        tk.Frame.__init__(self, master)
+        self.bind("<FocusIn>", self.on_focus_in)
+        self.bind("<FocusOut>", self.on_focus_out)
+        self.bind("<Configure>", self.on_configure)
+        self.focus_set()
+
+    def embed_browser(self):
+        window_info = cef.WindowInfo()
+        rect = [0, 0, self.winfo_width(), self.winfo_height()]
+        window_info.SetAsChild(self.get_window_handle(), rect)
+        self.browser = cef.CreateBrowserSync(window_info,
+                                             url="https://www.google.com/")
+        assert self.browser
+ #       self.browser.SetClientHandler(LoadHandler(self))
+ #       self.browser.SetClientHandler(FocusHandler(self))
+        self.message_loop_work()
+
+    def get_window_handle(self):
+        if self.winfo_id() > 0:
+            return self.winfo_id()
+        elif MAC:
+            # On Mac window id is an invalid negative value (Issue #308).
+            # This is kind of a dirty hack to get window handle using
+            # PyObjC package. If you change structure of windows then you
+            # need to do modifications here as well.
+            # noinspection PyUnresolvedReferences
+            from AppKit import NSApp
+            # noinspection PyUnresolvedReferences
+            import objc
+            # Sometimes there is more than one window, when application
+            # didn't close cleanly last time Python displays an NSAlert
+            # window asking whether to Reopen that window.
+            # noinspection PyUnresolvedReferences
+            return objc.pyobjc_id(NSApp.windows()[-1].contentView())
+        else:
+            raise Exception("Couldn't obtain window handle")
+
+    def message_loop_work(self):
+        cef.MessageLoopWork()
+        self.after(10, self.message_loop_work)
+
+    def on_configure(self, _):
+        if not self.browser:
+            self.embed_browser()
+
+    def on_root_configure(self):
+        # Root <Configure> event will be called when top window is moved
+        if self.browser:
+            self.browser.NotifyMoveOrResizeStarted()
+
+    def on_mainframe_configure(self, width, height):
+        if self.browser:
+            if WINDOWS:
+                ctypes.windll.user32.SetWindowPos(
+                    self.browser.GetWindowHandle(), 0,
+                    0, 0, width, height, 0x0002)
+            elif LINUX:
+                self.browser.SetBounds(0, 0, width, height)
+            self.browser.NotifyMoveOrResizeStarted()
+
+    def on_focus_in(self, _):
+        if self.browser:
+            self.browser.SetFocus(True)
+
+    def on_focus_out(self, _):
+        if self.browser:
+            self.browser.SetFocus(False)
+
+    def on_root_close(self):
+        if self.browser:
+            self.browser.CloseBrowser(True)
+            self.browser = None
+        self.destroy()
+
+
+if __name__ == '__main__':
+    sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
+    root = tk.Tk()
+    app = App(root)
+    # Tk must be initialized before CEF otherwise fatal error (Issue #306)
+    cef.Initialize()
+    app.mainloop()
+    cef.Shutdown()
+

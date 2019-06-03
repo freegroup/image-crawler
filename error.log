@@ -1,0 +1,16 @@
+
+[2019-06-02 19:38:18] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 229, in <module>
+    app = App(root)
+  File "./src/010-image-crawler/main.py", line 89, in __init__
+    window_info.SetAsChild(self.get_window_handle(), rect)
+NameError: name 'rect' is not defined
+
+
+[2019-06-02 19:50:40] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 301, in <module>
+    app = App(root)
+  File "./src/010-image-crawler/main.py", line 91, in __init__
+    self.browser_frame = BrowserFrame(self, self.navigation_bar)
+AttributeError: 'App' object has no attribute 'navigation_bar'
+
