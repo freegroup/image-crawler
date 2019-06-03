@@ -14,3 +14,141 @@ NameError: name 'rect' is not defined
     self.browser_frame = BrowserFrame(self, self.navigation_bar)
 AttributeError: 'App' object has no attribute 'navigation_bar'
 
+
+[2019-06-03 11:11:19] Traceback (most recent call last):
+  File "./src/010-image-crawler/tk_demo.py", line 377, in <module>
+    main()
+  File "./src/010-image-crawler/tk_demo.py", line 49, in main
+    app = MainFrame(root)
+  File "./src/010-image-crawler/tk_demo.py", line 72, in __init__
+    self.setup_icon()
+  File "./src/010-image-crawler/tk_demo.py", line 131, in setup_icon
+    icon_path = os.path.join(resources, "tkinter"+IMAGE_EXT)
+NameError: name 'IMAGE_EXT' is not defined
+
+
+[2019-06-03 11:11:45] Traceback (most recent call last):
+  File "./src/010-image-crawler/tk_demo.py", line 372, in <module>
+    main()
+  File "./src/010-image-crawler/tk_demo.py", line 49, in main
+    app = MainFrame(root)
+  File "./src/010-image-crawler/tk_demo.py", line 78, in __init__
+    self.navigation_bar = NavigationBar(self)
+  File "./src/010-image-crawler/tk_demo.py", line 265, in __init__
+    back_png = os.path.join(resources, "back"+IMAGE_EXT)
+NameError: name 'IMAGE_EXT' is not defined
+
+
+[2019-06-03 11:28:59] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 188, in <module>
+    app = App(root)
+TypeError: __init__() takes 1 positional argument but 2 were given
+
+
+[2019-06-03 11:29:13] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 187, in <module>
+    app = App()
+  File "./src/010-image-crawler/main.py", line 79, in __init__
+    url='file://' + os.path.join(cur_dir, "ui", "index.html")
+  File "cefpython_py37.pyx", line 682, in cefpython_py37.CreateBrowserSync
+AssertionError: cefpython.CreateBrowserSync() may only be called on the UI thread
+
+
+[2019-06-03 11:29:39] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 190, in <module>
+    app.mainloop()
+AttributeError: 'App' object has no attribute 'mainloop'
+
+
+[2019-06-03 12:42:55] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 209, in <module>
+    app = App()
+  File "./src/010-image-crawler/main.py", line 99, in __init__
+    from AppKit import NSApp
+ModuleNotFoundError: No module named 'AppKit'
+
+
+[2019-06-03 12:56:28] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 214, in <module>
+    app = App()
+  File "./src/010-image-crawler/main.py", line 73, in __init__
+    self.image_loading = { "image": Image.open(os.path.join(dir_path, "loading.png"))}
+UnboundLocalError: local variable 'os' referenced before assignment
+
+
+[2019-06-03 13:03:09] Traceback (most recent call last):
+  File "./src/010-image-crawler/main.py", line 198, in <module>
+    app = App()
+  File "./src/010-image-crawler/main.py", line 73, in __init__
+    self.image_loading = { "image": Image.open(os.path.join(dir_path, "loading.png"))}
+NameError: name 'Image' is not defined
+
+
+[2019-06-03 13:08:46] Traceback (most recent call last):
+  File "lifespan_handler.pyx", line 103, in cefpython_py37.LifespanHandler_DoClose
+  File "./src/010-image-crawler/main.py", line 175, in DoClose
+    self.__root.destroy()
+AttributeError: 'load_handler' object has no attribute '_load_handler__root'
+
+
+[2019-06-03 13:11:18] Traceback (most recent call last):
+  File "lifespan_handler.pyx", line 103, in cefpython_py37.LifespanHandler_DoClose
+  File "./src/010-image-crawler/main.py", line 175, in DoClose
+    self.__root.destroy()
+AttributeError: 'load_handler' object has no attribute '_load_handler__root'
+
+
+[2019-06-03 15:38:08] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 153, in check_for_image_callback
+    if queue_img_appraised.qsize()>0 and self.image_current == self.image_loading :
+AttributeError: 'App' object has no attribute 'image_current'
+
+
+[2019-06-03 15:46:21] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 150, in check_for_image_callback
+    if queue_img_appraised.qsize() > 0 and self.image_current == self.image_loading:
+AttributeError: 'App' object has no attribute 'image_current'
+
+
+[2019-06-03 15:46:38] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 150, in check_for_image_callback
+    if queue_img_appraised.qsize() > 0 and self.image_current == self.image_loading:
+AttributeError: 'App' object has no attribute 'image_current'
+
+
+[2019-06-03 16:10:51] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 143, in skip_image_callback
+    self.display_next_image()
+  File "./src/010-image-crawler/main.py", line 186, in display_next_image
+    image_src = "data:{0};base64,{1}".format(self.get_descriptor_by_type(ext), img_str.decode("utf-8"))
+  File "./src/010-image-crawler/main.py", line 205, in get_descriptor_by_type
+    raise Exception("No support for ["+ext+"] Only Jpeg, Png and Gif images are supported.")
+Exception: No support for [MPO] Only Jpeg, Png and Gif images are supported.
+
+
+[2019-06-03 16:26:57] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 156, in check_for_image_callback
+    self.display_next_image()
+  File "./src/010-image-crawler/main.py", line 186, in display_next_image
+    image_src = "data:{0};base64,{1}".format(conf.get_descriptor_by_type(ext), img_str.decode("utf-8"))
+AttributeError: 'Configuration' object has no attribute 'get_descriptor_by_type'
+
+
+[2019-06-03 16:56:16] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 141, in skip_image_callback
+    if 'md5' in self.image_current.keys():
+AttributeError: 'NoneType' object has no attribute 'keys'
+
+
+[2019-06-03 16:56:29] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 141, in skip_image_callback
+    if 'md5' in self.image_current.keys():
+AttributeError: 'NoneType' object has no attribute 'keys'
+

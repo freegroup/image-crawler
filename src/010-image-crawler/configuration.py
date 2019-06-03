@@ -11,6 +11,14 @@ class Configuration:
             Configuration.__config = ConfigParser()
             Configuration.__config.read(Configuration.__file)
 
+    def image_descriptor_by_type(self, ext):
+        options = {
+            "JPEG": "image/jpeg",
+            "PNG": "image/png",
+            "GIF": "image/gif"
+        }
+        return options.get(ext)
+
     def impl_search(self):
         return self.search(key='implementation', default="search.impl.BingSearchWorker")
 
@@ -27,7 +35,7 @@ class Configuration:
         return self.appraiser(key='implementation', default="appraiser.impl.AvoidDuplicates")
 
     def appraiser(self, key, val=None, default=None):
-        return Configuration.getter_setter(section="appraiser", key=key, val=val, default=default)
+        return Configuration.getter_setter(section="APPRAISER", key=key, val=val, default=default)
 
     def ui(self, key, val=None, default=None):
         return Configuration.getter_setter(section="UI", key=key, val=val, default=default)
@@ -43,6 +51,7 @@ class Configuration:
 
     def search(self, key, val=None, default=None):
         return Configuration.getter_setter(section="SEARCH", key=key, val=val, default=default)
+
 
 
 

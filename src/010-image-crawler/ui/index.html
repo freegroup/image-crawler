@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="main.css">
     <script type="application/javascript" src="main.js"></script>
 
+    <script>
+        setTimeout(function(){window.focus();},1000);
+    </script>
 </head>
     <body>
         <div id="header">
@@ -39,7 +42,8 @@
         <div id="panel">
             <div class="title">Search</div>
             <div class="input-group">Term <input id="search-term" value="Katze im Garten"></div>
-            <button id="search-button>" onclick="onSearchClick()">Find</button>
+            <button id="search-button" onclick="onSearchClick()">Find</button>
+            <img src="./images/search.gif" id="search-animation">
         </div>
 
 
@@ -47,8 +51,8 @@
             <img src="" id="preview_image">
 
             <div id="preview_buttonbar">
-                <button onclick="onSkipClick()">Skip Image</button>
-                <button onclick="onKeepClick()">Keep Image</button>
+                <button onclick="onSkipClick()" id="button_skip" disabled>Skip Image</button>
+                <button onclick="onKeepClick()" id="button_keep" disabled>Keep Image</button>
             </div>
         </div>
 

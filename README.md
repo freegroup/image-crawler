@@ -15,3 +15,6 @@ quickly gather training images and thereby cut down on the time it takes to buil
 
 
 brew install protobuf
+ pip install pyobjc
+ 
+ 

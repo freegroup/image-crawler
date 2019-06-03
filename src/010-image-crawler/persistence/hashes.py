@@ -8,7 +8,7 @@ class MD5Inventory:
         pass
 
     def count_already_accepted(self):
-        return len(MD5Inventory.__accepted)
+        return len(MD5Inventory.__accepted)/2
 
     def add_already_accepted(self, md5):
         if isinstance(md5, list):

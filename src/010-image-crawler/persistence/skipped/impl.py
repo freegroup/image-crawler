@@ -33,6 +33,7 @@ class StoreToFolderWorker(Thread):
             try:
                 image_meta = self.__queue_input.get()
                 md5 = image_meta["md5"]
+                url = image_meta["url"]
                 img = image_meta["image"]
                 img.save(os.path.join(self.__dir, md5 + "." + img.format.lower()))
 
@@ -41,6 +42,8 @@ class StoreToFolderWorker(Thread):
                 json_data = json.dumps(image_meta, indent=4)
                 with open(os.path.join(self.__dir, md5 + ".json"), "w") as f:
                     f.write(json_data)
+                inventory.add_already_skipped(md5)
+                inventory.add_already_skipped(url)
 
             except OSError:
                 pass

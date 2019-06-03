@@ -36,6 +36,9 @@ class BingSearchWorker(Thread):
                     offset = offset+count
 
     def search(self, term, count, offset):
+        if term==None:
+            return
+
         print("perform new search term: " + term + " index: "+str(offset))
 
         headers = {'Ocp-Apim-Subscription-Key': conf.search("subscription_key")}

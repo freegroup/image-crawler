@@ -10,8 +10,11 @@ from PIL import Image
 from threading import Thread
 
 from persistence.hashes import MD5Inventory
+from configuration import Configuration
 
 inventory = MD5Inventory()
+conf = Configuration()
+
 
 # Fetches Images and stores them as PIL Image in the named queue
 #
@@ -51,7 +54,6 @@ class URLDownloadWorker:
                     if not inventory.has_hash(url):
                         data = requests.get(url).content
                         img = Image.open(io.BytesIO(data))
-
                         # enrich the meta data with the image instance and the MD5 hash
                         meta_data["image"] = img
                         meta_data["md5"] = str(imagehash.dhash(img))

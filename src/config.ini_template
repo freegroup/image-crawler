@@ -24,7 +24,7 @@ implementation = persistence.skipped.impl.StoreToFolderWorker
 dir = ./data/010-image-crawler/skipped
 
 [APPRAISER]
-implementation = appraiser.impl.AvoidDuplicates
+implementation = appraiser.impl.ValidateLoadedImages
 
 [CROPPER]
 dir = ./data/020-image-cropper/
