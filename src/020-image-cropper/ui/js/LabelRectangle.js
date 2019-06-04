@@ -6,7 +6,7 @@
  * @author Andreas Herz
  * @extend draw2d.Connection
  */
-var LabelRectangle= draw2d.shape.basic.Rectangle.extend({
+var LabelRectangle = draw2d.shape.basic.Rectangle.extend({
     
     init:function(attr)
     {
@@ -18,7 +18,7 @@ var LabelRectangle= draw2d.shape.basic.Rectangle.extend({
       
       // add the new decoration to the connection with a position locator.
       //
-      this.add(this.label, new draw2d.layout.locator.CenterLocator(this));
+      this.add(this.label, new draw2d.layout.locator.TopLocator(this));
       
       this.label.installEditor(new draw2d.ui.LabelInplaceEditor());
     }
