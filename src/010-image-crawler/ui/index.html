@@ -3,15 +3,10 @@
 <head>
 
     <link rel="stylesheet" href="main.css">
-    <script type="application/javascript" src="main.js"></script>
-
-    <script>
-        setTimeout(function(){window.focus();},1000);
-    </script>
 </head>
     <body>
         <div id="header">
-            <div class="step right">
+            <div class="step right" id="arrow_counter_candidates">
                 <div class="label">
                     Candidates
                     <div class="counter" id="counter_candidates">
@@ -19,7 +14,7 @@
                     </div>
                 </div>
             </div>
-            <div class="step left right">
+            <div class="step left right" id="arrow_counter_review">
                 <div class="label">
                     For Review
                     <div class="counter" id="counter_review">
@@ -27,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <div class="step left">
+            <div class="step left" id="arrow_counter_pool">
                 <div class="label">
                     Your Image Pool
                     <div class="counter" id="counter_pool">
@@ -40,10 +35,13 @@
 
 
         <div id="panel">
-            <div class="title">Search</div>
-            <div class="input-group">Term <input id="search-term" value="Katze im Garten"></div>
-            <button id="search-button" onclick="onSearchClick()">Find</button>
-            <img src="./images/search.gif" id="search-animation">
+            <fieldset class="panel-group">
+                <legend class="title">Search</legend>
+                <div class="input-group">Term <input id="search-term" value="Katze im Garten"></div>
+                <img src="./images/search.gif" id="search-animation">
+                <button id="search-button" onclick="onSearchClick()">Find</button>
+            </fieldset>
+
         </div>
 
 
@@ -57,4 +55,9 @@
         </div>
 
     </body>
+
+<script src="./lib/popper.min.js"></script>
+<script src="./lib/tippy.all.min.js"></script>
+<script src="./js/main.js"></script>
+
 </html>

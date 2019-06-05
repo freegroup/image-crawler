@@ -1,7 +1,3 @@
-#from sys import platform as sys_pf
-#if sys_pf == 'darwin':
-#    import matplotlib
-#    matplotlib.use("TkAgg")
 import queue
 import os
 import platform
@@ -9,7 +5,6 @@ import sys
 import base64
 
 from cefpython3 import cefpython as cef
-from PIL import ImageTk, Image, ImageOps
 from pydoc import locate
 from io import BytesIO
 
@@ -26,10 +21,10 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Load the app configuration
 #
-conf = Configuration(inifile=os.path.join(dir_path, "..", "config.ini"))
+conf = Configuration(inifile=os.path.join(dir_path, "config.ini"))
 inventory = MD5Inventory()
 
-# Some sync. queue to handle the differnet threads for searching, loading, grouping,...
+# Some sync. queue to handle the different threads for searching, loading, grouping,...
 #
 queue_search_query = queue.Queue(maxsize=100)
 queue_img_urls = queue.Queue(maxsize=100)
@@ -38,10 +33,6 @@ queue_img_appraised = queue.Queue(maxsize=100)
 queue_img_accepted = queue.Queue(maxsize=1000)
 queue_img_skipped = queue.Queue(maxsize=1000)
 
-# Init the configured Worker for Searching, Appraising,...
-# You can easy implement your very own "GoogleSearcher" instead of the BingSearcher.
-# Even searching images from a local directory is possible
-#
 SearchWorker = locate(conf.impl_search())
 search_worker = SearchWorker(queue_search_query, queue_img_urls)
 search_worker.start()
@@ -63,25 +54,27 @@ skipped_worker = SkippedImageWorker(queue_img_skipped)
 skipped_worker.start()
 
 
-# Very basic UI for the image search and selection.
-#
-class App():
-
+class App:
     def __init__(self):
 
         self.image_current = None
         self.check_versions()
 
+        # Start/Open the cefpython window (chrome embedding framework) and show the HTML UI.
+        # For me it is much easier in HTML instead of tkinter, qt,...
+        #
         window_info = cef.WindowInfo()
         rect = [150, 250, 950, 700]
         window_info.SetAsChild(0, rect)
-
         cur_dir = os.path.dirname(os.path.abspath(__file__))
         self.browser = cef.CreateBrowserSync(
             window_info,
             url='file://' + os.path.join(cur_dir, "ui", "index.html")
         )
 
+        # Bind the python and js functions
+        # This is the communication between js and python.
+        #
         self.browser.SetClientHandler(self.load_handler())
         bindings = cef.JavascriptBindings()
         bindings.SetFunction("py_search_stop_callback", self.search_stop_callback)
@@ -91,6 +84,8 @@ class App():
         bindings.SetFunction("py_check_image_callback", self.check_for_image_callback)
         self.browser.SetJavascriptBindings(bindings)
 
+        # just to bring the window on top. Unfortunately the windows is always in the background
+        # on my system....so I need this hack
         if MAC:
             from Cocoa import NSRunningApplication, NSApplicationActivateIgnoringOtherApps
             app = NSRunningApplication.runningApplicationWithProcessIdentifier_(os.getpid())
@@ -153,15 +148,18 @@ class App():
                 queue_img_accepted.put(self.image_current)
             self.display_next_image()
 
+    # called from a js interval method to update toolbar with the latest numbers
+    # and to check if we can show a new image to the user
+    #
     def check_for_image_callback(self):
-        if queue_img_appraised.qsize() > 0 and self.image_current == None:
+        if queue_img_appraised.qsize() > 0 and self.image_current is None:
             self.display_next_image()
-        if(queue_img_urls.qsize() < queue_img_urls.maxsize):
+        if queue_img_urls.qsize() < queue_img_urls.maxsize:
             self.browser.ExecuteFunction("js_set_counter", "counter_candidates", queue_img_urls.qsize())
         else:
             self.browser.ExecuteFunction("js_set_counter", "counter_candidates", ">"+str(queue_img_urls.maxsize))
 
-        if(queue_img_appraised.qsize() < queue_img_appraised.maxsize):
+        if queue_img_appraised.qsize() < queue_img_appraised.maxsize:
             self.browser.ExecuteFunction("js_set_counter", "counter_review", queue_img_appraised.qsize())
         else:
             self.browser.ExecuteFunction("js_set_counter", "counter_review", ">"+str(queue_img_appraised.maxsize))
@@ -173,15 +171,11 @@ class App():
     def display_next_image(self):
         if queue_img_appraised.qsize()>0  :
             self.image_current = queue_img_appraised.get()
-            #self.skip_button.state(["!disabled"])   # Disable the button.
-            #self.keep_button.state(["!disabled"])  # Enable the button.
         else:
             self.image_current = None
-            #self.skip_button.state(["disabled"])   # Disable the button.
-            #self.keep_button.state(["disabled"])  # Enable the button.
 
-        img =  self.image_current["image"]
-        ext =img.format
+        img = self.image_current["image"]
+        ext = img.format
         buffered = BytesIO()
         img.save(buffered, ext)
         img_str = base64.b64encode(buffered.getvalue())
@@ -189,13 +183,8 @@ class App():
         self.browser.ExecuteFunction("js_set_image", image_src)
 
     class load_handler(object):
-        def OnLoadEnd(self, browser, **_):
-            pass
-            #browser.ExecuteFunction("js_init_image_check_timer")
-
         def DoClose(self, browser):
             cef.QuitMessageLoop()
-
 
     def check_versions(self):
         ver = cef.GetVersion()

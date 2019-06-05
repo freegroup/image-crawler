@@ -3,6 +3,35 @@ var check_image_timer =0;
 
 document.onkeydown = checkKey;
 
+tippy('#search-button', {
+    content: 'Enter a search term and press the search button to get suggestions for new pictures promoted by Bing Image Search.',
+    arrow: true,
+    delay:[1000, 20],
+    flipBehavior: ["bottom", "right"],
+    placement:"bottom"
+})
+
+tippy('#arrow_counter_candidates', {
+    content: 'Valid search result and ready for downloading from the web',
+    arrow: true,
+    delay:[500, 20],
+    placement:"bottom"
+})
+tippy('#arrow_counter_review', {
+    content: 'Images downloaded from the web and ready for user rating',
+    arrow: true,
+    delay:[500, 20],
+    placement:"bottom"
+})
+tippy('#arrow_counter_pool', {
+    content: 'Already downloaded images and as good voted',
+    arrow: true,
+    delay:[500, 20],
+    placement:"bottom"
+})
+
+py_check_image_callback();
+
 function checkKey(e) {
 
     e = e || window.event;
@@ -35,7 +64,7 @@ function onSearchClick() {
     var input = document.getElementById("search-term");
     var button = document.getElementById("search-button");
     if(input.disabled===false ) {
-        document.getElementById("search-animation").style.display = "block";
+        document.getElementById("search-animation").style.visibility = "visible";
         input.disabled = true;
         button.innerText ="Stop"
         check_image_timer = setInterval(function(){
@@ -47,7 +76,7 @@ function onSearchClick() {
         clearInterval(check_image_timer);
         js_set_counter("counter_candidates", "--")
         js_set_counter("counter_review", "--")
-        document.getElementById("search-animation").style.display="none";
+        document.getElementById("search-animation").style.visibility="hidden";
         input.disabled = false;
         button.innerText ="Search"
         py_search_stop_callback();
@@ -59,10 +88,10 @@ function onSearchClick() {
 
 /* called from python */
 function js_set_image(src){
-    console.log("set_oimage", src, src!=="")
+    var disabled = src===""
     document.getElementById("preview_image").src = src;
-    document.getElementById("button_skip").disabled = src==="";
-    document.getElementById("button_keep").disabled = src==="";
+    document.getElementById("button_skip").disabled = disabled;
+    document.getElementById("button_keep").disabled = disabled;
 }
 
 function js_set_counter(elementId, value){

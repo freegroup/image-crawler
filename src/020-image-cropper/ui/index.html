@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, minimum-scale=1.0, , maximum-scale=1.0" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <link type="text/css" rel="stylesheet" href="./css/example.css" />
+    <link type="text/css" rel="stylesheet" href="./css/main.css" />
 
     <script src="./lib/jquery.js"></script>
     <script src="./lib/jquery-ui.js"></script>
@@ -20,8 +20,41 @@
 </head>
 
     <body>
-        <div  onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="width:1500px; height:1500px; ">
+        <div id="header">
+            <div class="step right">
+                <div class="label">
+                    Images to label
+                    <div class="counter" id="counter_candidates">
+                        --
+                    </div>
+                </div>
+            </div>
+
+            <div class="step left">
+                <div class="label">
+                    Labelled Images
+                    <div class="counter" id="counter_pool">
+                        --
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="panel">
+            <div class="title">Search</div>
+            <div class="input-group">Term <input id="search-term" value="Katze im Garten"></div>
+            <button id="search-button" onclick="onSearchClick()">Find</button>
+            <img src="./images/search.gif" id="search-animation">
+        </div>
+
+
+        <div id="preview">
+            <div  onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="width:1500px; height:1500px; ">
+            </div>
         </div>
     </body>
-    <script src="./js/main.js"></script>
+
+<script src="./js/main.js"></script>
 </html>
