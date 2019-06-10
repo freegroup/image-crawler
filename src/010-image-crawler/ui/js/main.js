@@ -1,7 +1,6 @@
 
 var check_image_timer =0;
 
-document.onkeydown = checkKey;
 
 tippy('#search-button', {
     content: 'Enter a search term and press the search button to get suggestions for new pictures promoted by Bing Image Search.',
@@ -51,6 +50,8 @@ function checkKey(e) {
         onKeepClick()
     }
 }
+document.onkeydown = checkKey;
+
 
 function onSkipClick() {
     py_skip_image_callback();

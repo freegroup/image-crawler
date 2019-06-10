@@ -24,7 +24,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 conf = Configuration(inifile=os.path.join(dir_path, "config.ini"))
 inventory = MD5Inventory()
 
-# Some sync. queue to handle the different threads for searching, loading, grouping,...
+# Some worker queuea to handle the different threads for searching, loading, grouping,...
 #
 queue_search_query = queue.Queue(maxsize=100)
 queue_img_urls = queue.Queue(maxsize=100)

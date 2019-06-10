@@ -17,14 +17,11 @@ implementation = loader.impl.URLDownloadWorker
 
 [ACCEPTED]
 implementation = persistence.accepted.impl.StoreToFolderWorker
-dir = ./data/010-image-crawler/accepted
+dir = ./data/accepted
 
 [SKIPPED]
 implementation = persistence.skipped.impl.StoreToFolderWorker
-dir = ./data/010-image-crawler/skipped
+dir = ./data/skipped
 
 [APPRAISER]
 implementation = appraiser.impl.ValidateLoadedImages
-
-[CROPPER]
-dir = ./data/020-image-cropper/

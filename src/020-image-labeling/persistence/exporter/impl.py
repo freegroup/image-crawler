@@ -8,25 +8,26 @@ from persistence.hashes import MD5Inventory
 conf = Configuration()
 inventory = MD5Inventory()
 
-class StoreToFolderWorker(Thread):
+class ExportFolderWorker(Thread):
     def __init__(self, queue_input):
         Thread.__init__(self)
         self.setDaemon(True)
         self.__queue_input = queue_input
-        self.__dir = conf.accepted("dir")
+        self.__dir = conf.exporter("dir")
 
         if not os.path.exists(self.__dir):
             os.makedirs(self.__dir)
 
+        # read the images and add the
         json_files = [json for json in os.listdir(self.__dir) if json.endswith('.json')]
         for file in json_files:
             with open(os.path.join(self.__dir,file)) as json_file:
                 data = json.load(json_file)
-                inventory.add_already_accepted(data["md5"])
-                inventory.add_already_accepted(data["url"])
+                inventory.add_already_exported(data["md5"])
+
 
     def run(self):
-        "Calculate the MD5 hash of an image and store them with the has as filename"
+        """Calculate the MD5 hash of an image and store them with the has as filename"""
 
         while True:
             try:
@@ -37,13 +38,12 @@ class StoreToFolderWorker(Thread):
                 img.save(os.path.join(self.__dir, md5 + "." + img.format.lower()))
 
                 # save some meta data of the image side-by-side
-                image_meta["format"] = img.format
                 del image_meta["image"]
                 json_data = json.dumps(image_meta, indent=4)
                 with open(os.path.join(self.__dir, md5 + ".json"), "w") as f:
                     f.write(json_data)
-                inventory.add_already_accepted(md5)
-                inventory.add_already_accepted(url)
+                inventory.add_already_skipped(md5)
+                inventory.add_already_skipped(url)
 
             except OSError:
                 pass

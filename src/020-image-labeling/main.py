@@ -25,7 +25,25 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Load the app configuration
 #
-conf = Configuration(inifile=os.path.join(dir_path, "..", "config.ini"))
+conf = Configuration(inifile=os.path.join(dir_path, "config.ini"))
+
+# Some worker queuea to handle the different threads for searching, loading, grouping,...
+#
+queue_candidates = queue.Queue()
+queue_loaded = queue.Queue(maxsize=10)
+queue_output = queue.Queue(maxsize=10)
+
+
+# reads the images from the "queue_output" and exports them into the named directory
+#ImageWriterWorker = locate(conf.impl_exporter())
+#writer_worker = ImageWriterWorker(queue_output)
+#writer_worker.start()
+
+
+# stores the readed images into the "queue_input" for further processing
+ImageReaderWorker = locate(conf.impl_reader())
+reader_worker = ImageReaderWorker(queue_candidates, queue_loaded)
+reader_worker.start()
 
 
 # Very basic UI for the image search and selection.
@@ -46,7 +64,7 @@ class App():
 
         self.browser.SetClientHandler(self.load_handler())
         bindings = cef.JavascriptBindings()
-#        bindings.SetFunction("py_search_stop_callback", self.search_stop_callback)
+        bindings.SetFunction("py_search_start_callback", self.search_start_callback)
         self.browser.SetJavascriptBindings(bindings)
 
         if MAC:
@@ -58,7 +76,28 @@ class App():
     # to the "queue_search_query" queue. The "search" thread picks up the new search term and starts crawling
     # images related to the new search term
     def search_start_callback(self, search_term):
-        pass
+        self.image_current = queue_loaded.get()
+        img = self.image_current["image"]
+        ext = img.format
+        width, height = img.size
+        buffered = BytesIO()
+        img.save(buffered, ext)
+        img_str = base64.b64encode(buffered.getvalue())
+        image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
+        self.browser.ExecuteFunction("js_set_image", image_src, width, height)
+
+    # Load the next image from the queue and display them in the UI
+    #
+    def display_next_image(self):
+
+
+        img = self.image_current["image"]
+        ext = img.format
+        buffered = BytesIO()
+        img.save(buffered, ext)
+        img_str = base64.b64encode(buffered.getvalue())
+        image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
+        self.browser.ExecuteFunction("js_set_image", image_src)
 
     class load_handler(object):
         def OnLoadEnd(self, browser, **_):

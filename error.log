@@ -152,3 +152,15 @@ AttributeError: 'NoneType' object has no attribute 'keys'
     if 'md5' in self.image_current.keys():
 AttributeError: 'NoneType' object has no attribute 'keys'
 
+
+[2019-06-10 22:38:25] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+TypeError: search_start_callback() missing 1 required positional argument: 'search_term'
+
+
+[2019-06-10 22:40:19] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 85, in search_start_callback
+    image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
+AttributeError: 'Configuration' object has no attribute 'image_descriptor_by_type'
+

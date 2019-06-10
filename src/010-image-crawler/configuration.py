@@ -37,9 +37,6 @@ class Configuration:
     def appraiser(self, key, val=None, default=None):
         return Configuration.getter_setter(section="APPRAISER", key=key, val=val, default=default)
 
-    def ui(self, key, val=None, default=None):
-        return Configuration.getter_setter(section="UI", key=key, val=val, default=default)
-
     def accepted(self, key, val=None, default=None):
         return Configuration.getter_setter(section="ACCEPTED", key=key, val=val, default=default)
 
