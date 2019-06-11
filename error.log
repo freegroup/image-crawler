@@ -164,3 +164,49 @@ TypeError: search_start_callback() missing 1 required positional argument: 'sear
     image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
 AttributeError: 'Configuration' object has no attribute 'image_descriptor_by_type'
 
+
+[2019-06-12 00:24:49] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 149, in keep_image_callback
+    self.display_next_image()
+  File "./src/010-image-crawler/main.py", line 177, in display_next_image
+    img = self.image_current["image"]
+TypeError: 'NoneType' object is not subscriptable
+
+
+[2019-06-12 00:29:29] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/010-image-crawler/main.py", line 149, in keep_image_callback
+    self.display_next_image()
+  File "./src/010-image-crawler/main.py", line 177, in display_next_image
+    img = self.image_current["image"]
+TypeError: 'NoneType' object is not subscriptable
+
+
+[2019-06-12 00:33:36] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 77, in search_start_callback
+    ext = img.format
+AttributeError: 'NoneType' object has no attribute 'format'
+
+
+[2019-06-12 00:33:58] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 77, in search_start_callback
+    ext = img.format
+AttributeError: 'NoneType' object has no attribute 'format'
+
+
+[2019-06-12 00:34:56] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 77, in search_start_callback
+    ext = img.format
+AttributeError: 'NoneType' object has no attribute 'format'
+
+
+[2019-06-12 00:35:05] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 77, in search_start_callback
+    ext = img.format
+AttributeError: 'NoneType' object has no attribute 'format'
+

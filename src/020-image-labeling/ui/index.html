@@ -7,16 +7,6 @@
 
     <link type="text/css" rel="stylesheet" href="./css/main.css" />
 
-    <script src="./lib/jquery.js"></script>
-    <script src="./lib/jquery-ui.js"></script>
-
-    <script src="./lib/draw2d.js"></script>
-
-    <script src="./js/RectangleToolPolicy.js"></script>
-    <script src="./js/LabelRectangle.js"></script>
-
-
-
 </head>
 
     <body>
@@ -43,10 +33,10 @@
 
 
         <div id="panel">
-            <div class="title">Search</div>
-            <div class="input-group">Term <input id="search-term" value="Katze im Garten"></div>
-            <button id="search-button" onclick="onSearchClick()">Find</button>
-            <img src="./images/search.gif" id="search-animation">
+            <div class="title">Label Images</div>
+            <div class="input-group selected-label-group" id="label-1-group">Label &lt;1&gt; <input id="label-1" value="cat"></div>
+            <div class="input-group" id="label-2-group">Label &lt;2&gt; <input id="label-2" value="dog"></div>
+            <div class="input-group" id="label-3-group">Label &lt;3&gt; <input id="label-3" value="car"></div>
         </div>
 
 
@@ -54,7 +44,27 @@
             <div  onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="width:1500px; height:1500px; ">
             </div>
         </div>
+
+        <div id="overlay">
+            <div id="overlay-content">
+                <img src="images/shift-left-drag.png">
+                To add a label for an loaded image
+            </div>
+        </div>
+
     </body>
 
+<script src="./lib/jquery.js"></script>
+<script src="./lib/jquery-ui.js"></script>
+
+<script src="./lib/draw2d.js"></script>
+
+<script src="./js/RectangleToolPolicy.js"></script>
+<script src="./js/LabelRectangle.js"></script>
+<script src="./lib/popper.min.js"></script>
+<script src="./lib/tippy.all.min.js"></script>
 <script src="./js/main.js"></script>
+
+
+
 </html>

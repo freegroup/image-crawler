@@ -1,6 +1,7 @@
 import os
 import json
 from threading import Thread
+from PIL import Image
 
 from configuration import Configuration
 from persistence.hashes import MD5Inventory
@@ -34,10 +35,19 @@ class StoreToFolderWorker(Thread):
                 md5 = image_meta["md5"]
                 url = image_meta["url"]
                 img = image_meta["image"]
-                img.save(os.path.join(self.__dir, md5 + "." + img.format.lower()))
+                format = img.format
+
+                basewidth = int(conf.accepted("imagewidth"))
+                wpercent = (basewidth/float(img.size[0]))
+                hsize = int((float(img.size[1])*float(wpercent)))
+                img = img.resize((basewidth,hsize), Image.ANTIALIAS)
+
+                img.save(os.path.join(self.__dir, md5 + "." + format.lower()))
 
                 # save some meta data of the image side-by-side
-                image_meta["format"] = img.format
+                image_meta["format"] = format
+                image_meta["width"] = img.size[0]
+                image_meta["height"] = img.size[1]
                 del image_meta["image"]
                 json_data = json.dumps(image_meta, indent=4)
                 with open(os.path.join(self.__dir, md5 + ".json"), "w") as f:

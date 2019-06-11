@@ -19,7 +19,7 @@ var LabelRectangle = draw2d.shape.basic.Rectangle.extend({
       // Create any Draw2D figure as decoration for the connection
       //
       this.label = new draw2d.shape.basic.Label({
-          text:"I'm a Label",
+          text: attr.text,
           bgColor:"#1ca1c1",
           stroke:0,
           fontColor:"#ffffff"});

@@ -18,6 +18,7 @@ implementation = loader.impl.URLDownloadWorker
 [ACCEPTED]
 implementation = persistence.accepted.impl.StoreToFolderWorker
 dir = ./data/accepted
+imagewidth = 800
 
 [SKIPPED]
 implementation = persistence.skipped.impl.StoreToFolderWorker

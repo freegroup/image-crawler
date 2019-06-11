@@ -1,7 +1,3 @@
-#from sys import platform as sys_pf
-#if sys_pf == 'darwin':
-#    import matplotlib
-#    matplotlib.use("TkAgg")
 import queue
 import os
 import platform
@@ -89,8 +85,6 @@ class App():
     # Load the next image from the queue and display them in the UI
     #
     def display_next_image(self):
-
-
         img = self.image_current["image"]
         ext = img.format
         buffered = BytesIO()

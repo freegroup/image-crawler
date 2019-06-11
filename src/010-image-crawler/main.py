@@ -171,15 +171,16 @@ class App:
     def display_next_image(self):
         if queue_img_appraised.qsize()>0  :
             self.image_current = queue_img_appraised.get()
+            img = self.image_current["image"]
+            ext = img.format
+            buffered = BytesIO()
+            img.save(buffered, ext)
+            img_str = base64.b64encode(buffered.getvalue())
+            image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
         else:
             self.image_current = None
+            image_src = ""
 
-        img = self.image_current["image"]
-        ext = img.format
-        buffered = BytesIO()
-        img.save(buffered, ext)
-        img_str = base64.b64encode(buffered.getvalue())
-        image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
         self.browser.ExecuteFunction("js_set_image", image_src)
 
     class load_handler(object):

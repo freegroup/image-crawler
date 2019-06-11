@@ -45,6 +45,7 @@ var RectangleToolPolicy = draw2d.policy.canvas.BoundingboxSelectionPolicy.extend
       var bottomRight = new draw2d.geo.Point(x, y)
       if (this.topLeftPoint.distance(bottomRight) > 3) {
         var rect = new LabelRectangle({
+            text: document.getElementById(currentLabelInput).value,
             x: this.topLeftPoint.x,
             y: this.topLeftPoint.y,
             width: bottomRight.x - this.topLeftPoint.x,

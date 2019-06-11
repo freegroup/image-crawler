@@ -36,12 +36,14 @@ class ReadFromFolderWorker(Thread):
             try:
                 image_meta = self.__queue_input.get()
                 md5 = image_meta["md5"]
-                path = os.path.join(self.__dir,md5)
+                path = os.path.join(self.__dir, md5)
                 image = None
                 if os.path.isfile(path+".jpeg"):
                     image = Image.open(path+".jpeg")
                 elif os.path.isfile(path+".png"):
                     image = Image.open(path+".png")
+                elif os.path.isfile(path+".gif"):
+                    image = Image.open(path+".gif")
                 image_meta["image"] = image
 
                 self.__queue_output.put(image_meta)
