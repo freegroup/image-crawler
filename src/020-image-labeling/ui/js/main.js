@@ -80,18 +80,18 @@ function checkKey(e) {
         setSelectedLabel("label-3-group")
     }
     else if (e.code === 'ArrowLeft') {
-        // left arrow
+        onLastClick()
     }
     else if (e.code === 'ArrowRight') {
-        // right arrow
         onNextClick()
     }
-    console.log(currentLabelInput)
 }
 
 /* called from python */
-function js_set_image(src, width, height){
+function js_set_image(src, width, height, rectangles){
     canvas.clear();
+    var reader = new draw2d.io.json.Reader();
+    reader.unmarshal(canvas, rectangles);
     canvas.add(currentImage =new draw2d.shape.basic.Image({
         path:src,
         selectable:false,
@@ -104,9 +104,39 @@ function js_set_image(src, width, height){
 }
 
 function onNextClick() {
-    py_search_start_callback("ddd");
+    var writer = new draw2d.io.json.Writer();
+    writer.marshal(canvas,function(json){
+        json = filterJson(json)
+        py_on_next_click_callback(json);
+    });
 }
 
+
+function onLastClick() {
+    var writer = new draw2d.io.json.Writer();
+    writer.marshal(canvas,function(json){
+        json = filterJson(json)
+        py_on_last_click_callback(json);
+    });
+}
+
+
+function filterJson(json){
+    json = json.filter(function (el) {
+        return el.type === "draw2d.shape.basic.Rectangle";
+    });
+    json = json.map(function (rect) {
+        return {
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
+            type: rect.type,
+            id: rect.id
+        };
+    })
+    return json
+}
 $("body")
     .scrollTop(0)
     .scrollLeft(0);

@@ -210,3 +210,123 @@ AttributeError: 'NoneType' object has no attribute 'format'
     ext = img.format
 AttributeError: 'NoneType' object has no attribute 'format'
 
+
+[2019-06-12 15:55:15] Traceback (most recent call last):
+  File "./src/020-image-labeling/main.py", line 104, in <module>
+    app = App()
+  File "./src/020-image-labeling/main.py", line 63, in __init__
+    bindings.SetFunction("py_search_start_callback", self.search_start_callback)
+AttributeError: 'App' object has no attribute 'search_start_callback'
+
+
+[2019-06-12 15:58:07] Traceback (most recent call last):
+  File "./src/020-image-labeling/main.py", line 108, in <module>
+    app = App()
+  File "./src/020-image-labeling/main.py", line 63, in __init__
+    bindings.SetFunction("py_on_next_click_callback", self.on_next_click_callback)
+AttributeError: 'App' object has no attribute 'on_next_click_callback'
+
+
+[2019-06-12 15:59:11] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 89, in OnLoadEnd
+    self.on_next_click_callback()
+AttributeError: 'load_handler' object has no attribute 'on_next_click_callback'
+
+
+[2019-06-12 16:01:14] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 90, in OnLoadEnd
+    app.on_next_click_callback()
+TypeError: on_next_click_callback() missing 1 required positional argument: 'labels_json'
+
+
+[2019-06-12 16:35:26] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 88, in OnLoadEnd
+    app.on_next_click_callback("ssss")
+  File "./src/020-image-labeling/main.py", line 73, in on_next_click_callback
+    self.image_current = queue_loaded.get()
+NameError: name 'queue_loaded' is not defined
+
+
+[2019-06-12 16:37:29] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 84, in OnLoadEnd
+    app.on_next_click_callback("ssss")
+  File "./src/020-image-labeling/main.py", line 74, in on_next_click_callback
+    print(queue_candidates[self.current_index])
+IndexError: index 0 is out of bounds for axis 0 with size 0
+
+
+[2019-06-12 16:37:40] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 84, in OnLoadEnd
+    app.on_next_click_callback("ssss")
+  File "./src/020-image-labeling/main.py", line 74, in on_next_click_callback
+    print(queue_candidates[self.current_index])
+IndexError: index 1 is out of bounds for axis 0 with size 0
+
+
+[2019-06-12 16:41:49] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 83, in OnLoadEnd
+    app.on_next_click_callback("ssss")
+  File "./src/020-image-labeling/main.py", line 73, in on_next_click_callback
+    print(queue_candidates[self.current_index])
+IndexError: list index out of range
+
+
+[2019-06-12 16:57:46] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 93, in OnLoadEnd
+    app.on_next_click_callback("ssss")
+  File "./src/020-image-labeling/main.py", line 81, in on_next_click_callback
+    path = os.path.join(self.__dir, md5)
+AttributeError: 'App' object has no attribute '_App__dir'
+
+
+[2019-06-12 18:07:44] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 87, in on_next_click_callback
+    image_meta["labels"] = json.loads(labels)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 341, in loads
+    raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+TypeError: the JSON object must be str, bytes or bytearray, not list
+
+
+[2019-06-12 18:08:33] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 88, in on_next_click_callback
+    image_meta["labels"] = json.loads(labels)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 341, in loads
+    raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+TypeError: the JSON object must be str, bytes or bytearray, not list
+
+
+[2019-06-12 18:09:08] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 89, in on_next_click_callback
+    json.dump(image_meta, current_json)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 180, in dump
+    fp.write(chunk)
+AttributeError: 'str' object has no attribute 'write'
+
+
+[2019-06-12 18:09:43] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 89, in on_next_click_callback
+    json.dump(image_meta, current_json)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 180, in dump
+    fp.write(chunk)
+AttributeError: 'str' object has no attribute 'write'
+
+
+[2019-06-12 18:13:34] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 90, in on_next_click_callback
+    json.dump(image_meta, outfile, ident=4)
+  File "/usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py", line 176, in dump
+    default=default, sort_keys=sort_keys, **kw).iterencode(obj)
+TypeError: __init__() got an unexpected keyword argument 'ident'
+

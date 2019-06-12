@@ -3,5 +3,23 @@
     "width": 800,
     "height": 383,
     "md5": "96ccd32d2c62c840",
-    "format": "JPEG"
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 182,
+            "id": "d33697d2-c737-811e-ba0d-0c6e38c8eea2",
+            "type": "draw2d.shape.basic.Rectangle",
+            "width": 189,
+            "x": 445,
+            "y": 101
+        },
+        {
+            "height": 232,
+            "id": "068c47d7-f558-ba45-0c24-ea0d842c4a71",
+            "type": "draw2d.shape.basic.Rectangle",
+            "width": 240,
+            "x": 427,
+            "y": 79
+        }
+    ]
 }
