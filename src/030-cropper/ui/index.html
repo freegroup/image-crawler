@@ -1,0 +1,70 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<title></title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, , maximum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link type="text/css" rel="stylesheet" href="./css/main.css" />
+
+</head>
+
+    <body>
+        <div id="header">
+            <div class="step right">
+                <div class="label">
+                    Images to label
+                    <div class="counter" id="counter_candidates">
+                        --
+                    </div>
+                </div>
+            </div>
+
+            <div class="step left">
+                <div class="label">
+                    Labelled Images
+                    <div class="counter" id="counter_pool">
+                        --
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="panel">
+            <div class="title">Label Images</div>
+            <div class="input-group selected-label-group" id="label-1-group">Label &lt;1&gt; <input id="label-1" value="cat"></div>
+            <div class="input-group" id="label-2-group">Label &lt;2&gt; <input id="label-2" value="dog"></div>
+            <div class="input-group" id="label-3-group">Label &lt;3&gt; <input id="label-3" value="car"></div>
+        </div>
+
+
+        <div id="preview">
+            <div  onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="width:1500px; height:1500px; ">
+            </div>
+        </div>
+
+        <div id="overlay">
+            <div id="overlay-content">
+                <img src="images/shift-left-drag.png">
+                To add a label for an loaded image
+            </div>
+        </div>
+
+    </body>
+
+<script src="./lib/jquery.js"></script>
+<script src="./lib/jquery-ui.js"></script>
+
+<script src="./lib/draw2d.js"></script>
+
+<script src="./js/RectangleToolPolicy.js"></script>
+<script src="./js/LabelRectangle.js"></script>
+<script src="./lib/popper.min.js"></script>
+<script src="./lib/tippy.all.min.js"></script>
+<script src="./js/main.js"></script>
+
+
+
+</html>

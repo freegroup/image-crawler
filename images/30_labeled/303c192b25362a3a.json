@@ -1,0 +1,18 @@
+{
+    "url": "https://www.agila.de/images/magazin/full/katzen-artgerecht-vom-garten-fernhalten-full-818x522.jpg",
+    "width": 800,
+    "height": 510,
+    "md5": "303c192b25362a3a",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 362,
+            "id": "56197a51-b88c-8d23-1ab5-02e2f7e9b07b",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 410,
+            "x": 190,
+            "y": 111
+        }
+    ]
+}

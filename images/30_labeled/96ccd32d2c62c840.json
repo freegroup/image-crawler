@@ -1,0 +1,18 @@
+{
+    "url": "https://ungezieferabwehr.net/wp-content/uploads/2018/04/Fremde-Katzen-vertreiben-Tipps.jpg",
+    "width": 800,
+    "height": 383,
+    "md5": "96ccd32d2c62c840",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 247,
+            "id": "6c303976-d143-6987-c353-6bd15f8f6266",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 475,
+            "x": 201,
+            "y": 64
+        }
+    ]
+}

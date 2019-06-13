@@ -1,0 +1,18 @@
+{
+    "url": "http://www.p-i-x-e-l.net/files/2013/04/IMG_0020_cut_klein.jpg",
+    "width": 800,
+    "height": 533,
+    "md5": "53d9998c16f6a6e6",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 287,
+            "id": "008f01aa-de2b-0900-bc1e-9c6907b147af",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 695,
+            "x": 40,
+            "y": 42
+        }
+    ]
+}

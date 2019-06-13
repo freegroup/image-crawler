@@ -1,7 +1,0 @@
-[READER]
-implementation = persistence.reader.impl.ReadFromFolderWorker
-dir = ./data/accepted
-
-[EXPORTER]
-implementation = persistence.exporter.impl.ExportToFolderWorker
-dir = ./data/labeled

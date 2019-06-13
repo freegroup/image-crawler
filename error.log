@@ -330,3 +330,52 @@ AttributeError: 'str' object has no attribute 'write'
     default=default, sort_keys=sort_keys, **kw).iterencode(obj)
 TypeError: __init__() got an unexpected keyword argument 'ident'
 
+
+[2019-06-12 22:45:47] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 119, in OnLoadEnd
+    app.display_image()
+  File "./src/020-image-labeling/main.py", line 99, in display_image
+    with open(next_json) as json_file:
+FileNotFoundError: [Errno 2] No such file or directory: '96ccd32d2c62c840.json'
+
+
+[2019-06-12 22:55:42] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 107, in OnLoadEnd
+    app.display_image()
+  File "./src/020-image-labeling/main.py", line 97, in display_image
+    image_meta = reader_worker.read(self.current_index)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/020-image-labeling/persistence/reader/impl.py", line 34, in read
+    image_meta["image"] = Image.open(path)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/Image.py", line 2652, in open
+    fp = builtins.open(filename, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: '96ccd32d2c62c840.jpeg'
+
+
+[2019-06-12 22:56:51] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-image-labeling/main.py", line 107, in OnLoadEnd
+    app.display_image()
+  File "./src/020-image-labeling/main.py", line 101, in display_image
+    image_src = "data:{0};base64,{1}".format(conf.image_descriptor_by_type(ext), img_str.decode("utf-8"))
+NameError: name 'ext' is not defined
+
+
+[2019-06-12 22:57:21] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 87, in on_next_click_callback
+    with open(os.path.join(self.exporter_dir, current_json), 'w') as outfile:
+FileNotFoundError: [Errno 2] No such file or directory: './data/labeled/96ccd32d2c62c840.json'
+
+
+[2019-06-12 23:15:59] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-image-labeling/main.py", line 87, in py_next_click_callback
+    self.display_image()
+  File "./src/020-image-labeling/main.py", line 93, in display_image
+    self.current_image_meta = reader_worker.read(self.current_image_index)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/020-image-labeling/persistence/reader/impl.py", line 33, in read
+    image_meta["labels"] = image_meta["labels"]
+KeyError: 'labels'
+

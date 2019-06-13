@@ -1,0 +1,18 @@
+{
+    "url": "https://img.fotocommunity.com/katze-im-garten-cea7e79c-58f8-4b73-8468-a84a371c4ae8.jpg?height=1080",
+    "width": 800,
+    "height": 535,
+    "md5": "e0f9f0d0d040c4c0",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 491,
+            "id": "9d973c29-3776-c806-65ab-aab1b3789b86",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 496,
+            "x": 2,
+            "y": 43
+        }
+    ]
+}
