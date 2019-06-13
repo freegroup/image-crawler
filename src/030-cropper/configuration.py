@@ -11,15 +11,6 @@ class Configuration:
             Configuration.__config = ConfigParser()
             Configuration.__config.read(Configuration.__file)
 
-
-    def image_descriptor_by_type(self, ext):
-        options = {
-            "JPEG": "image/jpeg",
-            "PNG": "image/png",
-            "GIF": "image/gif"
-        }
-        return options.get(ext)
-
     def impl_reader(self):
         return self.reader(key='implementation', default="persistence.reader.impl.ReadFromFolderWorker")
 

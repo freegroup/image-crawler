@@ -1,0 +1,10 @@
+[READER]
+implementation = persistence.reader.impl.ReadFromFolderWorker
+dir = ./images/30_cropped
+
+[EXPORTER]
+implementation = persistence.exporter.impl.ExportToFolderWorker
+dir = ./images/40_trainset_folderbased
+image_width = 128
+image_height = 128
+image_depth = 3

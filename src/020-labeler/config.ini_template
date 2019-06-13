@@ -4,4 +4,4 @@ dir = ./images/10_accepted
 
 [EXPORTER]
 implementation = persistence.exporter.impl.ExportToFolderWorker
-dir = ./images/30_labeled
+dir = ./images/20_labeled

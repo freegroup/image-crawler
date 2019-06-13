@@ -1,5 +1,5 @@
 import os
-import json
+import shutil
 
 from configuration import Configuration
 conf = Configuration()
@@ -8,17 +8,29 @@ class ExportToFolderWorker():
     def __init__(self):
         self.__dir = conf.exporter("dir")
 
-        if not os.path.exists(self.__dir):
-            os.makedirs(self.__dir)
-
+        # cleanup and recreate the export directory
+        if os.path.exists(self.__dir):
+            shutil.rmtree(self.__dir)
+        os.makedirs(self.__dir)
 
     def write(self, image_meta):
-        md5 = image_meta["md5"]
+        labels = image_meta["labels"]
         img = image_meta["image"]
-        del image_meta["image"]
 
-        img.save(os.path.join(self.__dir, md5 + "." + img.format.lower()))
-        json_data = json.dumps(image_meta, indent=4)
-        with open(os.path.join(self.__dir, md5 + ".json"), "w") as f:
-            f.write(json_data)
+        for label in labels:
+            id = label["id"]
+            text = label["text"]
+            x = label["x"]
+            y = label["y"]
+            width = label["width"]
+            height = label["height"]
+            # ensure that the directory for the "label" already exists
+            label_path = os.path.join(self.__dir, text)
+            if not os.path.exists(label_path):
+                os.makedirs(label_path)
+
+            # Convert any PNG/GIF to JPEG's for consistency.
+            img.crop((x, y, x+width, y+height))\
+                .convert('RGB')\
+                .save(os.path.join(label_path, id + ".jpeg"), "JPEG")
 

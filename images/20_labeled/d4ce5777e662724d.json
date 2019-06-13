@@ -1,0 +1,18 @@
+{
+    "url": "https://p800.media.calvendo.net/978-3-669-48988-1.ANS.8.jpg",
+    "width": 800,
+    "height": 566,
+    "md5": "d4ce5777e662724d",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 384,
+            "id": "8144e9ea-21e5-2bae-754e-8a21ab33bf5d",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 412,
+            "x": 255,
+            "y": 78
+        }
+    ]
+}

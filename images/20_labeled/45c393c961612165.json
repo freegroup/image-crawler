@@ -1,0 +1,18 @@
+{
+    "url": "https://utopia.de/app/uploads/2018/06/katzen-vertreiben-katze-im-garten-cc0-pixabay-webandi-180613.jpg",
+    "width": 800,
+    "height": 375,
+    "md5": "45c393c961612165",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 369,
+            "id": "695a52a1-6723-5ab6-35cb-229d41ab4951",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 501,
+            "x": 205,
+            "y": 4
+        }
+    ]
+}

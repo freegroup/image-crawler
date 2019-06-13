@@ -1,0 +1,18 @@
+{
+    "url": "https://www.plantura.garden/wp-content/uploads/2018/05/g1-Katze-macht-in-den-Garten.jpg",
+    "width": 800,
+    "height": 449,
+    "md5": "e04a0c1ddbb2c6ce",
+    "format": "JPEG",
+    "labels": [
+        {
+            "height": 313,
+            "id": "bb5c96ba-0ba9-9964-f8ee-1535f16c5c78",
+            "text": "cat",
+            "type": "LabelRectangle",
+            "width": 470,
+            "x": 170,
+            "y": 69
+        }
+    ]
+}

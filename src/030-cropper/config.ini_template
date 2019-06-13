@@ -1,7 +1,7 @@
 [READER]
 implementation = persistence.reader.impl.ReadFromFolderWorker
-dir = ./images/10_accepted
+dir = ./images/30_labeled
 
 [EXPORTER]
 implementation = persistence.exporter.impl.ExportToFolderWorker
-dir = ./images/30_labeled
+dir = ./images/30_cropped

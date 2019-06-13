@@ -379,3 +379,70 @@ FileNotFoundError: [Errno 2] No such file or directory: './data/labeled/96ccd32d
     image_meta["labels"] = image_meta["labels"]
 KeyError: 'labels'
 
+
+[2019-06-13 11:49:16] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/030-cropper/main.py", line 78, in py_crop_image_callback
+    writer_worker.write(image_meta)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/030-cropper/persistence/exporter/impl.py", line 21, in write
+    print(labels[0]["id"])
+IndexError: list index out of range
+
+
+[2019-06-13 11:54:28] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/030-cropper/main.py", line 78, in py_crop_image_callback
+    writer_worker.write(image_meta)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/030-cropper/persistence/exporter/impl.py", line 26, in write
+    img.crop((x, y, width, height)).save(os.path.join(self.__dir, id + "." + img.format.lower()))
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/Image.py", line 2007, in save
+    save_handler(self, fp, filename)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 502, in _save
+    _write_single_frame(im, fp, palette)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 403, in _write_single_frame
+    im_out = _normalize_palette(im_out, palette, im.encoderinfo)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 391, in _normalize_palette
+    used_palette_colors = _get_optimize(im, info)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 678, in _get_optimize
+    max(used_palette_colors) > len(used_palette_colors)):
+ValueError: max() arg is an empty sequence
+
+
+[2019-06-13 11:56:11] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/030-cropper/main.py", line 78, in py_crop_image_callback
+    writer_worker.write(image_meta)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/030-cropper/persistence/exporter/impl.py", line 26, in write
+    img.crop((x, y, width, height)).save(os.path.join(self.__dir, id + "." + img.format.lower()), img.format)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/Image.py", line 2007, in save
+    save_handler(self, fp, filename)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 502, in _save
+    _write_single_frame(im, fp, palette)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 403, in _write_single_frame
+    im_out = _normalize_palette(im_out, palette, im.encoderinfo)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 391, in _normalize_palette
+    used_palette_colors = _get_optimize(im, info)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/GifImagePlugin.py", line 678, in _get_optimize
+    max(used_palette_colors) > len(used_palette_colors)):
+ValueError: max() arg is an empty sequence
+
+
+[2019-06-13 12:14:48] Traceback (most recent call last):
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/JpegImagePlugin.py", line 620, in _save
+    rawmode = RAWMODE[im.mode]
+KeyError: 'P'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/030-cropper/main.py", line 78, in py_crop_image_callback
+    writer_worker.write(image_meta)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/030-cropper/persistence/exporter/impl.py", line 27, in write
+    img.crop((x, y, x+width, y+height)).save(os.path.join(self.__dir, id + ".jpeg"), "JPEG")
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/Image.py", line 2007, in save
+    save_handler(self, fp, filename)
+  File "/Users/d023280/Documents/workspace/image-crawler/venv/lib/python3.7/site-packages/PIL/JpegImagePlugin.py", line 622, in _save
+    raise IOError("cannot write mode %s as JPEG" % im.mode)
+OSError: cannot write mode P as JPEG
+
