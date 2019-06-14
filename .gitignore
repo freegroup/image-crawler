@@ -2,3 +2,4 @@ config.ini
 *.pyc
 venv
 mnist
+src/tutorial/live-object/model

@@ -446,3 +446,14 @@ Traceback (most recent call last):
     raise IOError("cannot write mode %s as JPEG" % im.mode)
 OSError: cannot write mode P as JPEG
 
+
+[2019-06-14 10:44:43] Traceback (most recent call last):
+  File "load_handler.pyx", line 58, in cefpython_py37.LoadHandler_OnLoadEnd
+  File "./src/020-labeler/main.py", line 110, in OnLoadEnd
+    app.display_image()
+  File "./src/020-labeler/main.py", line 94, in display_image
+    self.current_image_meta = reader_worker.read(self.current_image_index)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/020-labeler/persistence/reader/impl.py", line 25, in read
+    json_file_name = os.path.join(self.__exporter_dir, self.__input[index])
+IndexError: list index out of range
+

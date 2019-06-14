@@ -40,6 +40,15 @@
             "width": 114,
             "x": 32,
             "y": 159
+        },
+        {
+            "height": 163,
+            "id": "c25fb2a2-b7cf-5723-dd3b-37dadf992c96",
+            "text": "dog",
+            "type": "LabelRectangle",
+            "width": 173,
+            "x": 588,
+            "y": 328
         }
     ]
 }
