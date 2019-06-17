@@ -5,3 +5,15 @@ dir = ./images/10_accepted
 [EXPORTER]
 implementation = persistence.exporter.impl.ExportToFolderWorker
 dir = ./images/20_labeled
+
+[UI]
+labels = cat,dog,anything
+
+# keyboard shortcut to get next/last image. to use another key setting
+# got to https://keycode.info/ and determine your desired keyboard "event.code"
+shortcut-next = ArrowRight
+shortcut-back = ArrowLeft
+
+shortcut-label-1= Digit1
+shortcut-label-2= Digit2
+shortcut-label-3= Digit3

@@ -26,6 +26,9 @@ class Configuration:
     def impl_exporter(self):
         return self.exporter(key='implementation', default="persistence.exporter.impl.StoreToFolderWorker")
 
+    def ui(self, key, val=None, default=None):
+        return Configuration.getter_setter(section="UI", key=key, val=val, default=default)
+
     def reader(self, key, val=None, default=None):
         return Configuration.getter_setter(section="READER", key=key, val=val, default=default)
 

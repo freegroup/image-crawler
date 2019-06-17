@@ -4,15 +4,5 @@
     "height": 533,
     "md5": "989960b033b23372",
     "format": "JPEG",
-    "labels": [
-        {
-            "height": 444,
-            "id": "2ccf32df-290d-39da-cd28-83285f1ba94a",
-            "text": "cat",
-            "type": "LabelRectangle",
-            "width": 377,
-            "x": 226,
-            "y": 49
-        }
-    ]
+    "labels": []
 }

@@ -457,3 +457,14 @@ OSError: cannot write mode P as JPEG
     json_file_name = os.path.join(self.__exporter_dir, self.__input[index])
 IndexError: list index out of range
 
+
+[2019-06-17 15:38:27] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 48, in cefpython_py37.V8FunctionHandler_Execute
+  File "./src/020-labeler/main.py", line 90, in py_next_click_callback
+    self.display_image()
+  File "./src/020-labeler/main.py", line 102, in display_image
+    self.current_image_meta = reader_worker.read(self.current_image_index)
+  File "/Users/d023280/Documents/workspace/image-crawler/src/020-labeler/persistence/reader/impl.py", line 25, in read
+    json_file_name = os.path.join(self.__exporter_dir, self.__input[index])
+IndexError: list index out of range
+

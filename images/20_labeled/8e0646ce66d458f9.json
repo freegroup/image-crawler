@@ -4,51 +4,5 @@
     "height": 623,
     "md5": "8e0646ce66d458f9",
     "format": "JPEG",
-    "labels": [
-        {
-            "height": 120,
-            "id": "6c77dcf6-9dfb-8aae-a9de-fe1bf52b7134",
-            "text": "cat",
-            "type": "LabelRectangle",
-            "width": 86,
-            "x": 590,
-            "y": 203
-        },
-        {
-            "height": 108,
-            "id": "0600dfbc-3338-3d68-62ae-64221dc5cc4a",
-            "text": "cat",
-            "type": "LabelRectangle",
-            "width": 65,
-            "x": 524,
-            "y": 3
-        },
-        {
-            "height": 98,
-            "id": "3d82f74a-4443-28e9-d311-9b4afd1bdbd3",
-            "text": "cat",
-            "type": "LabelRectangle",
-            "width": 124,
-            "x": 181,
-            "y": 6
-        },
-        {
-            "height": 117,
-            "id": "e36ce782-6dae-32b0-d7d2-714bf2fe6d2b",
-            "text": "cat",
-            "type": "LabelRectangle",
-            "width": 114,
-            "x": 32,
-            "y": 159
-        },
-        {
-            "height": 163,
-            "id": "c25fb2a2-b7cf-5723-dd3b-37dadf992c96",
-            "text": "dog",
-            "type": "LabelRectangle",
-            "width": 173,
-            "x": 588,
-            "y": 328
-        }
-    ]
+    "labels": []
 }

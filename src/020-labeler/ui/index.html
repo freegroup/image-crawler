@@ -13,16 +13,26 @@
         <div id="header">
             <div class="step right">
                 <div class="label">
-                    Images to label
+                    All Images
+                    <div class="counter" id="counter_all">
+                        --
+                    </div>
+                </div>
+            </div>
+
+            <div class="step left right">
+                <div class="label">
+                    Unlabeled
                     <div class="counter" id="counter_candidates">
                         --
                     </div>
                 </div>
             </div>
 
+
             <div class="step left">
                 <div class="label">
-                    Labelled Images
+                    Labelled
                     <div class="counter" id="counter_pool">
                         --
                     </div>
@@ -34,13 +44,13 @@
 
         <div id="panel">
             <div class="title">Label Images</div>
-            <div class="input-group selected-label-group" id="label-1-group">Label &lt;1&gt; <input id="label-1" value="cat"></div>
-            <div class="input-group" id="label-2-group">Label &lt;2&gt; <input id="label-2" value="dog"></div>
-            <div class="input-group" id="label-3-group">Label &lt;3&gt; <input id="label-3" value="car"></div>
+            <div class="input-group input-group-1 selected-label-group"><span id="label-1-group">1</span><input  tabindex="2" id="label-1" value="cat"></div>
+            <div class="input-group input-group-2"                     ><span id="label-2-group">2</span><input  tabindex="3" id="label-2" value="dog"></div>
+            <div class="input-group input-group-3"                     ><span id="label-3-group">3</span><input  tabindex="4" id="label-3" value="car"></div>
         </div>
 
 
-        <div id="preview">
+        <div id="preview"  tabindex="1">
             <div  onselectstart="javascript:/*IE8 hack*/return false" id="gfx_holder" style="width:1500px; height:1500px; ">
             </div>
         </div>

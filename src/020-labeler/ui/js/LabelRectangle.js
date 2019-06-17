@@ -38,7 +38,7 @@ var LabelRectangle = draw2d.shape.basic.Rectangle.extend({
 
         // add all decorations to the memento
         //
-        memento.text = this.label.getText()
+        memento.label_text = this.label.getText()
 
         return memento;
     },
@@ -53,6 +53,6 @@ var LabelRectangle = draw2d.shape.basic.Rectangle.extend({
     {
         this._super(memento);
 
-        this.label.setText(memento.text);
+        this.label.setText(memento.label_text);
     }
 });

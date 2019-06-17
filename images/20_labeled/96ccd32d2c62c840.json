@@ -6,13 +6,24 @@
     "format": "JPEG",
     "labels": [
         {
-            "height": 247,
-            "id": "6c303976-d143-6987-c353-6bd15f8f6266",
-            "text": "cat",
+            "height": 216,
+            "id": "6fceec2f-d8ed-8f88-04d7-36e81777a992",
+            "label_index": 0,
+            "label_text": "cat",
             "type": "LabelRectangle",
-            "width": 475,
-            "x": 201,
-            "y": 64
+            "width": 380,
+            "x": 341,
+            "y": 60
+        },
+        {
+            "height": 343,
+            "id": "028cb5c2-abb2-83b1-3c36-e37d00b95372",
+            "label_index": 2,
+            "label_text": "anything",
+            "type": "LabelRectangle",
+            "width": 167,
+            "x": 76,
+            "y": 30
         }
     ]
 }

@@ -6,13 +6,14 @@
     "format": "JPEG",
     "labels": [
         {
-            "height": 438,
-            "id": "71371d07-426f-0c4e-66eb-eae123c2e255",
-            "text": "cat",
+            "height": 437,
+            "id": "36d07d05-901e-7d98-37ca-2c1e40f419b4",
+            "label_index": 0,
+            "label_text": "cat",
             "type": "LabelRectangle",
-            "width": 416,
-            "x": 173,
-            "y": 91
+            "width": 403,
+            "x": 203,
+            "y": 74
         }
     ]
 }

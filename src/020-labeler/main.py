@@ -24,29 +24,25 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 #
 conf = Configuration(inifile=os.path.join(dir_path, "config.ini"))
 
-# Some worker queue to handle the different threads for searching, loading, grouping,...
-#
+# Images which have not yet been labeled
+# (filled by the "reader" )
 queue_candidates = []
 
-# reads the images from the "queue_output" and exports them into the named directory
+# The "Reader" and "Writer" are implemented as plugin. It is possible
+# to read/write from an S3 storage without changing the UI - just by writing new plugins
+#
 ImageWriterWorker = locate(conf.impl_exporter())
 writer_worker = ImageWriterWorker()
 
-
-# stores the readed images into the "queue_input" for further processing
 ImageReaderWorker = locate(conf.impl_reader())
 reader_worker = ImageReaderWorker(queue_candidates)
 
 
-# Very basic UI for the image search and selection.
-#
 class App():
     def __init__(self):
         self.check_versions()
         self.current_image_index = 0
         self.current_image_meta = None
-        self.reader_dir = conf.reader("dir")
-        self.exporter_dir = conf.exporter("dir")
 
         window_info = cef.WindowInfo()
         rect = [150, 250, 1150, 700]
@@ -61,9 +57,12 @@ class App():
         self.browser.SetClientHandler(self.load_handler())
         bindings = cef.JavascriptBindings()
         bindings.SetFunction("py_next_click_callback", self.py_next_click_callback)
-        bindings.SetFunction("py_last_click_callback", self.py_last_click_callback)
+        bindings.SetFunction("py_back_click_callback", self.py_back_click_callback)
+        bindings.SetFunction("py_set_labels", self.py_set_labels)
         self.browser.SetJavascriptBindings(bindings)
 
+        # bring the window on top. For some reasons the cefwindow start in the background...
+        #
         if MAC:
             from Cocoa import NSRunningApplication, NSApplicationActivateIgnoringOtherApps
             app = NSRunningApplication.runningApplicationWithProcessIdentifier_(os.getpid())
@@ -72,7 +71,8 @@ class App():
     # Called if the user pressed the "search" button. Now the current active search term is posted
     # to the "queue_search_query" queue. The "search" thread picks up the new search term and starts crawling
     # images related to the new search term
-    def py_last_click_callback(self, labels):
+    #
+    def py_back_click_callback(self, labels):
         self.current_image_meta["labels"] = labels
         writer_worker.write(self.current_image_meta)
         self.current_image_index = self.current_image_index-1
@@ -87,9 +87,14 @@ class App():
         self.current_image_index = self.current_image_index+1
         self.display_image()
 
-    # Called if the user pressed the "search" button. Now the current active search term is posted
-    # to the "queue_search_query" queue. The "search" thread picks up the new search term and starts crawling
-    # images related to the new search term
+    # Called if the user changes the labels in the input fields.
+    # New values are stored in the property file
+    #
+    def py_set_labels(self, labels):
+        conf.ui("labels", ",".join(labels))
+
+    # Send the image with the "current_image_index" as base64 to the HTML UI
+    #
     def display_image(self):
         self.current_image_meta = reader_worker.read(self.current_image_index)
         width = self.current_image_meta["width"]
@@ -104,10 +109,24 @@ class App():
         # show the new loaded image in the UI
         self.browser.ExecuteFunction("js_set_image", image_src, width, height, labels)
 
+    # read the configuration for the shortcuts and the labels from the configuration file and
+    # send them to the js UI
+    #
+    def init_ui(self):
+        self.display_image()
+        self.browser.ExecuteFunction("js_set_labels", conf.ui("labels").split(","))
+        self.browser.ExecuteFunction("js_set_navigation_shortcuts",
+                                     conf.ui("shortcut-next"),
+                                     conf.ui("shortcut-back"),
+                                     conf.ui("shortcut-label-1"),
+                                     conf.ui("shortcut-label-2"),
+                                     conf.ui("shortcut-label-3")
+                                     )
+
     class load_handler(object):
         def OnLoadEnd(self, browser, **_):
             global app
-            app.display_image()
+            app.init_ui()
             pass
 
         def DoClose(self, browser):

@@ -76,7 +76,6 @@ body {
 #panel{
     background-color: #fafbfc;
     position: absolute;
-    padding:10px;
     bottom: var(--border);
     left:  var(--border);
     width: var(--panel-width);
@@ -133,7 +132,7 @@ body {
 }
 
 .selected-label-group{
-    background-color: #cccccc;
+    background-color: cornflowerblue;
 }
 
 
@@ -157,4 +156,19 @@ body {
     border: 16px solid orange;
     background-color: white;
     z-index:1002;
+}
+
+
+.input-group {
+    padding:10px;
+}
+.input-group > span{
+    background-color: darkgray;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    float: left;
+    cursor: pointer;
 }
