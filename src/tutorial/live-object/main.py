@@ -1,13 +1,12 @@
 import os
 import cv2
-import time
 import argparse
-import multiprocessing
 import numpy as np
 import tensorflow as tf
+import six.moves.urllib as urllib
+import tarfile
 
 from utils.app_utils import FPS, WebcamVideoStream, HLSVideoStream
-from multiprocessing import Queue, Pool
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
@@ -17,13 +16,30 @@ CWD_PATH = os.path.dirname(os.path.realpath(__file__))
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
 # download from https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 MODEL_NAME = 'ssd_mobilenet_v2_coco_2018_03_29'
-MODEL_NAME = 'faster_rcnn_resnet101_kitti_2018_01_28'
-MODEL_NAME = 'faster_rcnn_nas_coco_2018_01_28'
-MODEL_NAME = 'ssdlite_mobilenet_v2_coco_2018_05_09'
-PATH_TO_CKPT = os.path.join(CWD_PATH, "model", MODEL_NAME, 'frozen_inference_graph.pb')
+#MODEL_NAME = 'ssd_mobilenet_v1_coco_11_06_2017' #fast
+#MODEL_NAME = 'faster_rcnn_resnet101_kitti_2018_01_28'
+#MODEL_NAME = 'faster_rcnn_resnet101_coco_11_06_2017' #medium speed
+#MODEL_NAME = 'faster_rcnn_nas_coco_2018_01_28'
+#MODEL_NAME = 'ssdlite_mobilenet_v2_coco_2018_05_09'
 
-# List of the strings that is used to add correct label for each box.
+MODEL_FILE = MODEL_NAME + '.tar.gz'
+PATH_TO_MODELS =os.path.join(CWD_PATH, "model")
+PATH_TO_CKPT = os.path.join(PATH_TO_MODELS, MODEL_NAME, 'frozen_inference_graph.pb')
 PATH_TO_LABELS = os.path.join(CWD_PATH, 'object_detection', 'data', 'mscoco_label_map.pbtxt')
+PATH_TO_TGZ = os.path.join(PATH_TO_MODELS, MODEL_FILE)
+NUM_CLASSES = 90
+
+
+DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
+fileAlreadyExists = os.path.isfile(PATH_TO_CKPT)
+if not fileAlreadyExists:
+    download_url =DOWNLOAD_BASE + MODEL_FILE
+    print('Downloading frozen inference graph: '+download_url)
+    opener = urllib.request.URLopener()
+    opener.retrieve(download_url, PATH_TO_TGZ)
+    tar_file = tarfile.open(PATH_TO_TGZ)
+    tar_file.extractall(path= PATH_TO_MODELS)
+
 
 NUM_CLASSES = 90
 
@@ -56,8 +72,7 @@ def detect_objects(image_np, sess, detection_graph):
     sboxes = np.squeeze(boxes)
     sboxes = sboxes[~np.all(sboxes == 0, axis=1)]
     box = tuple(sboxes[0].tolist())
-    print( sboxes.shape)
-    #print(box)
+
     # Visualization of the results of a detection.
     vis_util.visualize_boxes_and_labels_on_image_array(
         image_np,
@@ -70,8 +85,18 @@ def detect_objects(image_np, sess, detection_graph):
     return image_np
 
 
-def worker(input_q, output_q):
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-src', '--source', dest='video_source', type=int,
+                        default=0, help='Device index of the camera.')
+    parser.add_argument('-wd', '--width', dest='width', type=int,
+                        default=480, help='Width of the frames in the video stream.')
+    parser.add_argument('-ht', '--height', dest='height', type=int,
+                        default=360, help='Height of the frames in the video stream.')
+    args = parser.parse_args()
+
     # Load a (frozen) Tensorflow model into memory.
+    print("Loading tensorflow model.")
     detection_graph = tf.Graph()
     with detection_graph.as_default():
         od_graph_def = tf.GraphDef()
@@ -82,71 +107,22 @@ def worker(input_q, output_q):
 
         sess = tf.Session(graph=detection_graph)
 
-    fps = FPS().start()
+    print('Reading from webcam.')
+    video_capture = WebcamVideoStream(src=args.video_source,
+                                      width=args.width,
+                                      height=args.height).start()
+
     while True:
-        fps.update()
-        frame = input_q.get()
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        output_q.put(detect_objects(frame_rgb, sess, detection_graph))
-
-    fps.stop()
-    sess.close()
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-str', '--stream', dest="stream", action='store', type=str, default=None)
-    parser.add_argument('-src', '--source', dest='video_source', type=int,
-                        default=0, help='Device index of the camera.')
-    parser.add_argument('-wd', '--width', dest='width', type=int,
-                        default=480, help='Width of the frames in the video stream.')
-    parser.add_argument('-ht', '--height', dest='height', type=int,
-                        default=360, help='Height of the frames in the video stream.')
-    parser.add_argument('-num-w', '--num-workers', dest='num_workers', type=int,
-                        default=2, help='Number of workers.')
-    parser.add_argument('-q-size', '--queue-size', dest='queue_size', type=int,
-                        default=5, help='Size of the queue.')
-    args = parser.parse_args()
-
-    logger = multiprocessing.log_to_stderr()
-    logger.setLevel(multiprocessing.SUBDEBUG)
-
-    input_q = Queue(maxsize=args.queue_size)
-    output_q = Queue(maxsize=args.queue_size)
-    pool = Pool(args.num_workers, worker, (input_q, output_q))
-
-
-    if (args.stream):
-        print('Reading from hls stream.')
-        video_capture = HLSVideoStream(src=args.stream).start()
-    else:
-        print('Reading from webcam.')
-        video_capture = WebcamVideoStream(src=args.video_source,
-                                          width=args.width,
-                                          height=args.height).start()
-
-
-    fps = FPS().start()
-
-    while True:  # fps._numFrames < 120
         frame = video_capture.read()
-        input_q.put(frame)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_detected = detect_objects(frame_rgb, sess, detection_graph)
 
-        t = time.time()
-
-        output_rgb = cv2.cvtColor(output_q.get(), cv2.COLOR_RGB2BGR)
+        output_rgb = cv2.cvtColor(frame_detected, cv2.COLOR_RGB2BGR)
         cv2.imshow('Video', output_rgb)
-        fps.update()
-
-        print('[INFO] elapsed time: {:.2f}'.format(time.time() - t))
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    fps.stop()
-    print('[INFO] elapsed time (total): {:.2f}'.format(fps.elapsed()))
-    print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
-
-    pool.terminate()
+    sess.close()
     video_capture.stop()
     cv2.destroyAllWindows()
