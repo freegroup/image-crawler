@@ -754,6 +754,7 @@ def visualize_boxes_and_labels_on_image_array(
   box_to_track_ids_map = {}
   if not max_boxes_to_draw:
     max_boxes_to_draw = boxes.shape[0]
+  print(max_boxes_to_draw)
   for i in range(min(max_boxes_to_draw, boxes.shape[0])):
     if scores is None or scores[i] > min_score_thresh:
       box = tuple(boxes[i].tolist())
